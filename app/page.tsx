@@ -1,8 +1,18 @@
-import Image from "next/image";
+import { Wrapper } from "@/components/landing/wrapper";
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+    <div className="relative flex flex-col items-center justify-center h-full">
+        <div
+          className="
+            absolute inset-0
+            bg-[url('/images/dodo.svg')]
+            bg-center bg-cover
+            opacity-23      /* adjust to taste */
+            -z-10
+          "
+        />
+        <Wrapper/>
     </div>
   );
 }
