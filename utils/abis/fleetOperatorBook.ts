@@ -1,0 +1,1 @@
+export const fleetOperatorBookAbi = [] as const;
