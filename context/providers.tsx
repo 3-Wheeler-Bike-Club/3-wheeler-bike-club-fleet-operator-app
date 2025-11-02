@@ -1,5 +1,7 @@
 "use client";
 
+import { ReactNode } from "react";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { PrivyProvider } from "@privy-io/react-auth";
@@ -11,7 +13,7 @@ import { wagmiConfig } from "@/context/wagmiConfig";
 
 const queryClient = new QueryClient();
 
-export default function Providers({children}: {children: React.ReactNode}) {
+export default function Providers({children}: {children: ReactNode}) {
     return (
         <PrivyProvider 
             appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID}
