@@ -3,7 +3,11 @@ import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
-const auth = (req: Request) => ({ id: "" }); // id not needed for current version of uploadthing
+const auth = (req: Request) => {
+  console.log(req)
+  return { id: "" } // id not needed for current version of uploadthing
+}; 
+
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {

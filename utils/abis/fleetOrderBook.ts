@@ -971,7 +971,7 @@ export const fleetOrderBookAbi = [
     "stateMutability": "view"
   },
   {
-    "name": "isCompliant",
+    "name": "isLiquidityProviderCompliant",
     "type": "function",
     "inputs": [
       {
@@ -1251,19 +1251,6 @@ export const fleetOrderBookAbi = [
     "stateMutability": "nonpayable"
   },
   {
-    "name": "setCompliance",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "owners",
-        "type": "address[]",
-        "internalType": "address[]"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
     "name": "setFleetExpectedValuePlusLockPeriod",
     "type": "function",
     "inputs": [
@@ -1294,6 +1281,19 @@ export const fleetOrderBookAbi = [
         "name": "_fleetFractionPrice",
         "type": "uint256",
         "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "name": "setLiquidityProviderCompliance",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "owners",
+        "type": "address[]",
+        "internalType": "address[]"
       }
     ],
     "outputs": [],
