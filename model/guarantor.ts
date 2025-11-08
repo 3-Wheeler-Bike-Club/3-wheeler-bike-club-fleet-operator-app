@@ -25,19 +25,15 @@ const GuarantorSchema = new mongoose.Schema(
         },
         country: {
             type: String,
-            required: true,
         },
         national: {
             type: String,
-            required: true,
         },
         headshot: {
             type: String,
-            required: true,
         },
         location: {
             type: String,
-            required: true,
         },
         compliant: {
             type: Boolean,

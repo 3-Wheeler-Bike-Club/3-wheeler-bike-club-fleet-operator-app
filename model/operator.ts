@@ -10,6 +10,10 @@ const OperatorSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        phone: {
+            type: String,
+            required: true,
+        },
         firstname: {
             type: String,
         },
@@ -19,29 +23,20 @@ const OperatorSchema = new mongoose.Schema(
         lastname: {
             type: String,
         },
-        phone: {
-            type: String,
-            required: true,
-        },
         country: {
             type: String,
-            required: true,
         },
         national: {
             type: String,
-            required: true,
         },
         license: {
             type: String,
-            required: true,
         },
         headshot: {
             type: String,
-            required: true,
         },
         location: {
             type: String,
-            required: true,
         },
         compliant: {
             type: Boolean,
