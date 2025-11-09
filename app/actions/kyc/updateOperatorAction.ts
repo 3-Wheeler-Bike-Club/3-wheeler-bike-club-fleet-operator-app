@@ -6,8 +6,12 @@ export async function updateOperatorAction(
     firstname: string,
     othername: string,
     lastname: string,
-    id: string,
-    files: string[]
+    country: string,
+    location: string,
+    national: string[],
+    verification: string,
+    license: string[],
+    headshot: string
 ) {
     try {
         const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateOperator`, {
@@ -21,8 +25,12 @@ export async function updateOperatorAction(
                 firstname: firstname,
                 othername: othername,
                 lastname: lastname,
-                id: id,
-                files: files
+                country: country,
+                location: location,
+                national: national,
+                verification: verification,
+                license: license,
+                headshot: headshot
             })
         })
         if (!response.ok) {

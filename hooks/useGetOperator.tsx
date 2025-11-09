@@ -9,9 +9,15 @@ export interface Operator {
     firstname: string
     othername: string
     lastname: string
-    id: string
-    files: string[]
+    country: string
+    national: string[]
+    verification: string
+    license: string[]
+    headshot: string
+    location: string
     compliant: boolean
+    createdAt: Date
+    updatedAt: Date
 }
 
 export const useGetOperator = (address: `0x${string}` | undefined) => {

@@ -14,15 +14,19 @@ export async function POST(
     try {
         await connectDB();
         
-        const { address, firstname, othername, lastname, id, files } = await req.json();
+        const { address, firstname, othername, lastname, country, location, national, verification, license, headshot } = await req.json();
 
         const operator = await Operator.findOneAndUpdate({address: address}, {
             
             firstname: firstname,
             othername: othername,
             lastname: lastname,
-            id: id,
-            files: files
+            country: country,
+            location: location,
+            national: national,
+            verification: verification,
+            license: license,
+            headshot: headshot,
         }, { new: true });
 
         if (!operator) {

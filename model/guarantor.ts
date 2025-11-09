@@ -26,13 +26,17 @@ const GuarantorSchema = new mongoose.Schema(
         country: {
             type: String,
         },
-        national: {
+        location: {
             type: String,
+        },
+        national: {
+            type: Array,
+        },
+        verification: {
+            type: String,
+            enum: ["manual", "self.xyz"],
         },
         headshot: {
-            type: String,
-        },
-        location: {
             type: String,
         },
         compliant: {
