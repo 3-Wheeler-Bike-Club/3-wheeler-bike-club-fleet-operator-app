@@ -48,10 +48,9 @@ interface VerifyKYCProps {
 
 export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps) {
 
-  const [nationalFiles, setNationalFiles] = useState < File[] | null> (null);
-  const [licenseFiles, setLicenseFiles] = useState < File[] | null> (null);
-  const [headshotFiles, setHeadshotFiles] = useState < File[] | null> (null);
-  //const [maxFiles, setMaxFiles] = useState<number | null>(null);
+  const [nationalFiles, setNationalFiles] = useState <File[] | null> (null);
+  const [licenseFiles, setLicenseFiles] = useState <File[] | null> (null);
+  const [headshotFiles, setHeadshotFiles] = useState <File[] | null> (null);
   const [loading, setLoading] = useState(false);
   const [manualVerification, /*setManualVerification*/] = useState(true);
   const [qr, setQR] = useState<boolean>(false);
@@ -260,7 +259,7 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
                 }
               </DrawerDescription>
           </DrawerHeader>
-          <div className="h-full overflow-y-auto">
+          <div className="flex flex-col h-full overflow-y-auto">
           {
             manualVerification
             ?(
@@ -268,64 +267,63 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
               {
                 upload && (
                     <>
-                        <div className="flex flex-col p-4 space-y-8">
-                            <div>
-                                {
-                                    operator.national.length <= 0
-                                    && (
-                                        <>
-                                            <Label className="text-yellow-600">National Idenfication <span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
-                                            <div>
-                                                <FileUploader
-                                                value={nationalFiles}
-                                                onValueChange={setNationalFiles}
-                                                dropzoneOptions={{
-                                                    maxFiles: 2!,
-                                                    maxSize: 1024 * 1024 * 4,
-                                                    multiple: true,
-                                                    accept: {
-                                                    "image/*": [".png", ".jpg", ".jpeg"],
-                                                    },
-                                                }}
-                                                className="relative bg-background rounded-lg p-2"
-                                                >
-                                                <FileInput
-                                                    id="fileInput"
-                                                    className="outline-dashed outline-1 outline-slate-500"
-                                                >
-                                                    <div className="flex items-center justify-center flex-col py-2 w-full ">
-                                                    <CloudUpload className='text-gray-500 w-10 h-10' />
-                                                    <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                                                        <span className="font-semibold">Click to upload </span>
-                                                        or drag and drop
-                                                    </p>
-                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        PNG, JPG or JPEG
-                                                    </p>
-                                                    </div>
-                                                </FileInput>
-                                                <FileUploaderContent>
-                                                    {nationalFiles &&
-                                                    nationalFiles.length > 0 &&
-                                                    nationalFiles.map((file, i) => (
-                                                        <FileUploaderItem key={i} index={i}>
-                                                        <Paperclip className="h-4 w-4 stroke-current" />
-                                                        <span>{shortenTxt(file.name)}</span>
-                                                        </FileUploaderItem>
-                                                    ))}
-                                                </FileUploaderContent>
-                                                </FileUploader>
-                                            </div>
-                                            <div className="text-xs text-muted-foreground text-center">{"Upload both sides of any National ID card"}</div>
-                                        
-                                        </>
-                                        
-                                    ) 
-                                }
-                            </div>
+                        <div className="flex flex-col p-4 space-y-6">
+                            {/* National ID */}
                             <div className="flex flex-col">
-                                <Label className="text-yellow-600">{"Driver's License"}<span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
-                                <div>
+                                {/* Label appears before the FileUploader */}
+                                <Label className="text-yellow-600">
+                                    National Identification <span className="text-xs text-muted-foreground">(must be under 4MB)</span>
+                                </Label>
+                                <FileUploader
+                                    value={nationalFiles}
+                                    onValueChange={setNationalFiles}
+                                    dropzoneOptions={{
+                                        maxFiles: 2,
+                                        maxSize: 1024 * 1024 * 4,
+                                        multiple: true,
+                                        accept: {
+                                            "image/*": [".png", ".jpg", ".jpeg"],
+                                        },
+                                    }}
+                                    className="relative bg-background rounded-lg p-2"
+                                >
+                                    <FileInput
+                                        id="national-fileInput"
+                                        className="outline-dashed outline-1 outline-slate-500"
+                                    >
+                                        <div className="flex items-center justify-center flex-col py-2 w-full ">
+                                            <CloudUpload className='text-gray-500 w-10 h-10' />
+                                            <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="font-semibold">Click to upload </span>
+                                                or drag and drop
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                PNG, JPG or JPEG
+                                            </p>
+                                        </div>
+                                    </FileInput>
+                                    <FileUploaderContent>
+                                        {nationalFiles &&
+                                            nationalFiles.length > 0 &&
+                                            nationalFiles.map((file, i) => (
+                                                <FileUploaderItem key={i} index={i}>
+                                                    <Paperclip className="h-4 w-4 stroke-current" />
+                                                    <span>{shortenTxt(file.name)}</span>
+                                                </FileUploaderItem>
+                                            ))}
+                                    </FileUploaderContent>
+                                </FileUploader>
+                                <div className="text-xs text-muted-foreground text-center">
+                                    {"Upload both sides of any National ID card"}
+                                </div>
+                            </div>
+
+                            {/* Driver's License */}
+                            <div className="flex flex-col">
+                                <Label className="text-yellow-600">
+                                    {"Driver's License"}
+                                    <span className="text-xs text-muted-foreground">(must be under 4MB)</span>
+                                </Label>
                                 <FileUploader
                                     value={licenseFiles}
                                     onValueChange={setLicenseFiles}
@@ -340,37 +338,41 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
                                     className="relative bg-background rounded-lg p-2"
                                 >
                                     <FileInput
-                                        id="fileInput"
+                                        id="license-fileInput"
                                         className="outline-dashed outline-1 outline-slate-500"
                                     >
-                                    <div className="flex items-center justify-center flex-col py-2 w-full ">
-                                        <CloudUpload className='text-gray-500 w-10 h-10' />
-                                        <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                                        <span className="font-semibold">Click to upload </span>
-                                        or drag and drop
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        PNG, JPG or JPEG
-                                        </p>
-                                    </div>
+                                        <div className="flex items-center justify-center flex-col py-2 w-full ">
+                                            <CloudUpload className='text-gray-500 w-10 h-10' />
+                                            <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="font-semibold">Click to upload </span>
+                                                or drag and drop
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                PNG, JPG or JPEG
+                                            </p>
+                                        </div>
                                     </FileInput>
                                     <FileUploaderContent>
-                                    {licenseFiles &&
-                                        licenseFiles.length > 0 &&
-                                        licenseFiles.map((file, i) => (
-                                        <FileUploaderItem key={i} index={i}>
-                                            <Paperclip className="h-4 w-4 stroke-current" />
-                                            <span>{shortenTxt(file.name)}</span>
-                                        </FileUploaderItem>
-                                        ))}
+                                        {licenseFiles &&
+                                            licenseFiles.length > 0 &&
+                                            licenseFiles.map((file, i) => (
+                                                <FileUploaderItem key={i} index={i}>
+                                                    <Paperclip className="h-4 w-4 stroke-current" />
+                                                    <span>{shortenTxt(file.name)}</span>
+                                                </FileUploaderItem>
+                                            ))}
                                     </FileUploaderContent>
                                 </FileUploader>
+                                <div className="text-xs text-muted-foreground text-center">
+                                    {"Upload both sides of your Driver's License"}
                                 </div>
-                                <div className="text-xs text-muted-foreground text-center">{"Upload the both sides of your Driver's License"}</div>                  
                             </div>
+
+                            {/* Headshot */}
                             <div className="flex flex-col">
-                                <Label className="text-yellow-600">Headshot<span className="text-xs text-muted-foreground">(must be under 4MB)</span></Label>
-                                <div>
+                                <Label className="text-yellow-600">
+                                    Headshot<span className="text-xs text-muted-foreground">(must be under 4MB)</span>
+                                </Label>
                                 <FileUploader
                                     value={headshotFiles}
                                     onValueChange={setHeadshotFiles}
@@ -385,58 +387,60 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
                                     className="relative bg-background rounded-lg p-2"
                                 >
                                     <FileInput
-                                        id="fileInput"
+                                        id="headshot-fileInput"
                                         className="outline-dashed outline-1 outline-slate-500"
                                     >
-                                    <div className="flex items-center justify-center flex-col py-2 w-full ">
-                                        <CloudUpload className='text-gray-500 w-10 h-10' />
-                                        <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
-                                        <span className="font-semibold">Click to upload </span>
-                                        or drag and drop
-                                        </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                                        PNG, JPG or JPEG
-                                        </p>
-                                    </div>
+                                        <div className="flex items-center justify-center flex-col py-2 w-full ">
+                                            <CloudUpload className='text-gray-500 w-10 h-10' />
+                                            <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                                <span className="font-semibold">Click to upload </span>
+                                                or drag and drop
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                PNG, JPG or JPEG
+                                            </p>
+                                        </div>
                                     </FileInput>
                                     <FileUploaderContent>
-                                    {licenseFiles &&
-                                        licenseFiles.length > 0 &&
-                                        licenseFiles.map((file, i) => (
-                                        <FileUploaderItem key={i} index={i}>
-                                            <Paperclip className="h-4 w-4 stroke-current" />
-                                            <span>{shortenTxt(file.name)}</span>
-                                        </FileUploaderItem>
-                                        ))}
+                                        {headshotFiles &&
+                                            headshotFiles.length > 0 &&
+                                            headshotFiles.map((file, i) => (
+                                                <FileUploaderItem key={i} index={i}>
+                                                    <Paperclip className="h-4 w-4 stroke-current" />
+                                                    <span>{shortenTxt(file.name)}</span>
+                                                </FileUploaderItem>
+                                            ))}
                                     </FileUploaderContent>
                                 </FileUploader>
+                                <div className="text-xs text-muted-foreground text-center">
+                                    {"Upload a recent photograph of yourself"}
                                 </div>
-                                <div className="text-xs text-muted-foreground text-center">{"Upload the both sides of your Driver's License"}</div>                  
                             </div>
+                            
+                            {/* Buttons */}
                             <div className="flex justify-between">
                                 <Button
-                                disabled={loading}
-                                className="w-1/2"
-                                variant="outline"
-                                onClick={() => {
-                                    setUpload(false);
-                                }}
+                                    disabled={loading}
+                                    className="w-1/2"
+                                    variant="outline"
+                                    onClick={() => {
+                                        setUpload(false);
+                                    }}
                                 >
-                                <Undo2   />
+                                    <Undo2 />
                                 </Button>
                                 <Button
                                     disabled={loading}
                                     onClick={onSubmitManualUpload}
                                 >
-                                    {
-                                        loading
+                                    {loading
                                         ? <Loader2 className="w-4 h-4 animate-spin" />
                                         : <Save />
                                     }
-                                    <p>Save & Submit</p>
+                                    <>Save & Submit</>
                                 </Button>
                             </div>
-                        </div>  
+                        </div>
                     </>
                 )
               }
@@ -585,51 +589,62 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
                                                         autoComplete="off" 
                                                         type="url"
                                                         disabled
-                                                        className="col-span-3" 
-                                                        placeholder={operator.lastname ? operator.lastname.toUpperCase() : "https://goo.gl/maps/..."} 
+                                                        className="col-span-3 text-yellow-600 underline" 
+                                                        placeholder={operator.location ? operator.location.toUpperCase() : "https://goo.gl/maps/..."} 
                                                         {...field}
+                                                        onChange={(e) => {
+                                                            field.onChange(e.target.value.toUpperCase())
+                                                        }}
                                                     />
                                                     {
-                                                        manualForm.getValues("location") === "https://goo.gl/maps/..." 
-                                                        ? (
-                                                            <>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    className="w-8 h-8"
-                                                                    onClick={() => {
-                                                                        
-                                                                        navigator.clipboard.readText().then((text) => {
-                                                                            if (text.startsWith("https://maps.app.goo.gl")) {
-                                                                                manualForm.setValue("location", text);
-                                                                                //toast.success("Location Pin shared successfully");
-                                                                            } else {
-                                                                                toast.error("Clipboard does not contain a valid Google Maps link");
+                                                        manualForm.getValues("location") !== undefined && (
+                                                            <Button asChild
+                                                                variant="outline"
+                                                                className="w-8 h-8"
+                                                                onClick={() => {
+                                                                    manualForm.setValue("location", "");
+                                                                    setTimeout(() => {
+                                                                        manualForm.reset(
+                                                                            {
+                                                                                location: undefined
                                                                             }
-                                                                        }).catch(() => {
-                                                                            toast.error("Failed to paste from clipboard");
-                                                                        });
-                                                                    }}
-                                                                >
-                                                                    <MapPinHouse className="w-8 h-8 text-yellow-600"/>
-                                                                </Button>
-                                                            </>
-                                                        ) 
-                                                        : (
-                                                            <>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    className="w-8 h-8"
-                                                                    onClick={() => {
-                                                                        
-                                                                        manualForm.setValue("location", "https://goo.gl/maps/...");
-                                                                    }}
-                                                                >
-                                                                    <MapPinX className="w-8 h-8 text-red-500"/>
-                                                                </Button>
-                                                            </>
-
+                                                                        );
+                                                                    }, 0);
+                                                                }}
+                                                            >
+                                                                <span>
+                                                                    <MapPinX className="w-8 h-8 text-red-600"/>
+                                                                </span>
+                                                            </Button>
                                                         )
                                                     }
+                                                    {   manualForm.getValues("location") === undefined && (
+                                                            <Button asChild
+                                                                variant="outline"
+                                                                className="w-8 h-8"
+                                                                onClick={() => {
+                                                                    
+                                                                    (async () => {
+                                                                        try {
+                                                                            const text = await navigator.clipboard.readText();
+                                                                            if (text.startsWith("https://maps.app.goo.gl")) {
+                                                                                manualForm.setValue("location", text);
+                                                                            } else {
+                                                                                toast.error("Share a valid Google Maps link");
+                                                                            }
+                                                                        } catch {
+                                                                            toast.error("Failed to share location");
+                                                                        }
+                                                                    })();
+                                                                }}
+                                                            >
+                                                                <span>
+                                                                    <MapPinHouse className="w-8 h-8 text-yellow-600"/>
+                                                                </span>
+                                                            </Button>
+                                                        )
+                                                    }
+                                                    
                                                 </div>
                                         </FormControl>
                                   </div>
