@@ -26,16 +26,20 @@ const OperatorSchema = new mongoose.Schema(
         country: {
             type: String,
         },
-        national: {
+        location: {
             type: String,
+        },
+        national: {
+            type: Array,
+        },
+        verification: {
+            type: String,
+            enum: ["manual", "self.xyz"],
         },
         license: {
-            type: String,
+            type: Array,
         },
         headshot: {
-            type: String,
-        },
-        location: {
             type: String,
         },
         compliant: {

@@ -1,7 +1,7 @@
 export function shortenTxt(
     txt?: string,
-    frontSlice = 3,
-    backSlice = 3
+    frontSlice = 18,
+    backSlice = 9
 ): string {
     if (!txt) return '';
     if (txt.length < frontSlice + backSlice) return txt;
