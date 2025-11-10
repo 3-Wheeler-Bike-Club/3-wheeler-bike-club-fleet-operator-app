@@ -8,6 +8,7 @@ import { useEffect } from "react"
 import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
 import { usePrivy } from "@privy-io/react-auth"
+import { useGetOperator } from "@/hooks/useGetOperator"
 
 
 export function Wrapper() {
@@ -17,14 +18,16 @@ export function Wrapper() {
     console.log(user?.wallet?.address)
     const address = user?.wallet?.address as `0x${string}`
     
-    const router = useRouter()
+    const { operator, loading, getOperatorSync } = useGetOperator(address!)
+    console.log(operator);
+    const router = useRouter()  
 
 
     const compliantQueryClient = useQueryClient()
     
     const { data: blockNumber } = useBlockNumber({ watch: true })  
 
-    const { data: compliant, queryKey: compliantQueryKey } = useReadContract({
+    const { data: compliant, isLoading: compliantLoading, queryKey: compliantQueryKey } = useReadContract({
         address: fleetOperatorBook,
         abi: fleetOperatorBookAbi,
         functionName: "isOperatorCompliant",
@@ -47,6 +50,17 @@ export function Wrapper() {
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
+            {
+                loading || compliantLoading
+                ? (
+                    <div className="flex h-full justify-center items-center text-2xl font-bold">
+                        <p>Loading...</p>
+                    </div>
+                ) 
+                : (
+                    <></>
+                )
+            }    
         </div>
     )
 }
