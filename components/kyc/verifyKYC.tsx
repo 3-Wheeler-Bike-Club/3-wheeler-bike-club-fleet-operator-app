@@ -232,12 +232,12 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
                     <>
                       {
                         upload && (
-                          <p>Step 2 of 2: Scan & Upload ID</p>
+                          <>Step 2 of 2: Scan & Upload ID</>
                         )
                       }
                       {
                         !upload && (
-                          <p>Step 1 of 2: Enter Name & Location</p>
+                          <>Step 1 of 2: Enter Name & Location</>
                         )
                       }
                     </>
@@ -246,12 +246,12 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
                     <>
                       {
                         qr && (
-                          <p>Step 2 of 2: Scan QR w/ Self.xyz app</p>
+                          <>Step 2 of 2: Scan QR w/ Self.xyz app</>
                         )
                       }
                       {
                         !qr && (
-                          <p>Step 1 of 2: Enter Name & Location</p>
+                          <>Step 1 of 2: Enter Name & Location</>
                         )
                       }
                     </>
@@ -597,51 +597,57 @@ export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps
                                                         }}
                                                     />
                                                     {
-                                                        manualForm.getValues("location") !== undefined && (
-                                                            <Button asChild
-                                                                variant="outline"
-                                                                className="w-8 h-8"
-                                                                onClick={() => {
-                                                                    manualForm.setValue("location", "");
-                                                                    setTimeout(() => {
-                                                                        manualForm.reset(
-                                                                            {
-                                                                                location: undefined
-                                                                            }
-                                                                        );
-                                                                    }, 0);
-                                                                }}
-                                                            >
-                                                                <span>
-                                                                    <MapPinX className="w-8 h-8 text-red-600"/>
-                                                                </span>
-                                                            </Button>
-                                                        )
-                                                    }
-                                                    {   manualForm.getValues("location") === undefined && (
-                                                            <Button asChild
-                                                                variant="outline"
-                                                                className="w-8 h-8"
-                                                                onClick={() => {
-                                                                    
-                                                                    (async () => {
-                                                                        try {
-                                                                            const text = await navigator.clipboard.readText();
-                                                                            if (text.startsWith("https://maps.app.goo.gl")) {
-                                                                                manualForm.setValue("location", text);
-                                                                            } else {
-                                                                                toast.error("Share a valid Google Maps link");
-                                                                            }
-                                                                        } catch {
-                                                                            toast.error("Failed to share location");
-                                                                        }
-                                                                    })();
-                                                                }}
-                                                            >
-                                                                <span>
-                                                                    <MapPinHouse className="w-8 h-8 text-yellow-600"/>
-                                                                </span>
-                                                            </Button>
+                                                        !operator.location && (
+                                                            <>
+                                                                {
+                                                                    manualForm.getValues("location") !== undefined && (
+                                                                        <Button asChild
+                                                                            variant="outline"
+                                                                            className="w-8 h-8"
+                                                                            onClick={() => {
+                                                                                manualForm.setValue("location", "");
+                                                                                setTimeout(() => {
+                                                                                    manualForm.reset(
+                                                                                        {
+                                                                                            location: undefined
+                                                                                        }
+                                                                                    );
+                                                                                }, 0);
+                                                                            }}
+                                                                        >
+                                                                            <span>
+                                                                                <MapPinX className="w-8 h-8 text-red-600"/>
+                                                                            </span>
+                                                                        </Button>
+                                                                    )
+                                                                }
+                                                                {   manualForm.getValues("location") === undefined && (
+                                                                        <Button asChild
+                                                                            variant="outline"
+                                                                            className="w-8 h-8"
+                                                                            onClick={() => {
+                                                                                
+                                                                                (async () => {
+                                                                                    try {
+                                                                                        const text = await navigator.clipboard.readText();
+                                                                                        if (text.startsWith("https://maps.app.goo.gl")) {
+                                                                                            manualForm.setValue("location", text);
+                                                                                        } else {
+                                                                                            toast.error("Share a valid Google Maps link");
+                                                                                        }
+                                                                                    } catch {
+                                                                                        toast.error("Failed to share location");
+                                                                                    }
+                                                                                })();
+                                                                            }}
+                                                                        >
+                                                                            <span>
+                                                                                <MapPinHouse className="w-8 h-8 text-yellow-600"/>
+                                                                            </span>
+                                                                        </Button>
+                                                                    )
+                                                                }
+                                                            </>
                                                         )
                                                     }
                                                     

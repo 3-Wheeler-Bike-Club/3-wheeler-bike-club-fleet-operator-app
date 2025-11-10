@@ -9,7 +9,7 @@ import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
 import { useGetOperator } from "@/hooks/useGetOperator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { DoorOpen, PhoneCall, UserRoundPen, UserRoundSearch } from "lucide-react"
+import { DoorOpen, PhoneCall, UserRoundCheck, UserRoundPen, UserRoundSearch } from "lucide-react"
 import { VerifyKYC } from "@/components/kyc/verifyKYC"
 import { VerifyContact } from "@/components/kyc/verifyContact"
 import { usePrivy } from "@privy-io/react-auth"
@@ -87,7 +87,7 @@ export function Wrapper() {
                                                     operator?.national && operator?.national?.length > 0
                                                     ? (
                                                         <>
-                                                            <UserRoundPen className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                                                            <UserRoundCheck className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                                                             <p className="text-2xl max-md:text-xl text-center font-bold">KYC submitted successfully.</p>
                                                             <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your KYC is pending verification. Please wait while we review your documents.</p>
                                                         </>
@@ -125,15 +125,3 @@ export function Wrapper() {
         </div>
     )
 }
-/*
- : 
-{
-                                            
-                                        }
-                                        
-                                        {
-                                            operator?.files && operator?.files?.length > 0
-                                            ? <p className="text-sm max-md:text-xs text-center text-muted-foreground"></p>
-                                            : 
-                                        }
-*/
