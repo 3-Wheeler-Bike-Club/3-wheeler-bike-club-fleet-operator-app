@@ -9,6 +9,8 @@ import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
 import { usePrivy } from "@privy-io/react-auth"
 import { useGetOperator } from "@/hooks/useGetOperator"
+import { Alert, AlertTitle, AlertDescription } from "../ui/alert"
+import { DoorOpen } from "lucide-react"
 
 
 export function Wrapper() {
@@ -58,7 +60,21 @@ export function Wrapper() {
                     </div>
                 ) 
                 : (
-                    <></>
+                    <>
+                        <div className="flex flex-col h-full w-full">
+
+                            <div className="flex w-full justify-center">
+                                <Alert className="w-full max-w-[66rem]">
+                                    <DoorOpen className="h-4 w-4" />
+                                    <AlertTitle className="font-bold">Welcome, {operator?.lastname}</AlertTitle>
+                                    <AlertDescription className="text-xs italic">
+                                        <p className="max-md:text-[11px]">{"You can now operate your own 3-wheeler"}</p>
+                                    </AlertDescription>
+                                </Alert>
+                            </div>
+
+                        </div>
+                    </>
                 )
             }    
         </div>
