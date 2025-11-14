@@ -6,8 +6,11 @@ export async function updateGuarantorAction(
     firstname: string,
     othername: string,
     lastname: string,
-    id: string,
-    files: string[]
+    country: string,
+    location: string,
+    national: string[],
+    verification: string,
+    headshot: string
 ) {
     try {
         const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateGuarantor`, {
@@ -21,8 +24,11 @@ export async function updateGuarantorAction(
                 firstname: firstname,
                 othername: othername,
                 lastname: lastname,
-                id: id,
-                files: files
+                country: country,
+                location: location,
+                national: national,
+                verification: verification,
+                headshot: headshot
             })
         })
         if (!response.ok) {
