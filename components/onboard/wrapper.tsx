@@ -113,7 +113,7 @@ export function Wrapper() {
                         
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 7 && "bg-yellow-500" } ${currentStep > 7 && "bg-green-500"}`}>{currentStep <= 7 && "7" }{currentStep > 7 && <CheckCheck/> }</p>
-                            <p className="text-[10px] text-center">Reservation Fee</p>
+                            <p className="text-[10px] text-center">Waitlist Fee</p>
                         </div>
                     </div>
                 </div>
