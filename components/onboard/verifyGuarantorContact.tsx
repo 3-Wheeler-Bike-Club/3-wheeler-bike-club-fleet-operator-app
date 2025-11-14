@@ -10,8 +10,8 @@ import { Link, Loader2, Save, Send } from "lucide-react"
 import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
-import { Operator } from "@/hooks/useGetOperator"
-import { postOperatorAction } from "@/app/actions/kyc/postOperatorAction"
+import { Guarantor } from "@/hooks/useGetGuarantor"
+import { postGuarantorAction } from "@/app/actions/kyc/postGuarantorAction"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { PhoneInput } from "@/components/ui/phone-input"
@@ -37,13 +37,13 @@ const termsFormSchema = z.object({
   terms: z.boolean(),
 })
 
-interface VerifyContactProps {
+interface VerifyGuarantorContactProps {
   address: `0x${string}`
-  operator: Operator | null
-  getOperatorSync: () => void
+  guarantor: Guarantor | null
+  getGuarantorSync: () => void
 }
 
-export function VerifyContact({ address, operator, getOperatorSync }: VerifyContactProps) {
+export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }: VerifyGuarantorContactProps) {
 
   const { user } = usePrivy()
   const emailFromPrivy = user?.email?.address
@@ -150,13 +150,13 @@ export function VerifyContact({ address, operator, getOperatorSync }: VerifyCont
       if (emailFromPrivy && values.terms) {
         //post liquidity provider preupload
         
-        const postOperator = await postOperatorAction(
+        const postGuarantor = await postGuarantorAction(
           address!,
           emailFromPrivy!.toLowerCase(),
           phone!,
         );
-        getOperatorSync();
-        if (postOperator) {
+          getGuarantorSync();
+        if (postGuarantor) {
           toast.success("Contact saved successfully", {
             description: `You can now complete your KYC`,
           })
@@ -260,8 +260,8 @@ export function VerifyContact({ address, operator, getOperatorSync }: VerifyCont
                                 <FormControl className="w-full">
                                   <PhoneInput
                                     autoComplete="off"
-                                    disabled={ !!operator?.phone || loadingCode || isDisabledPhone } 
-                                    placeholder={operator?.phone ? operator.phone : "Enter your phone number"}
+                                    disabled={ !!guarantor?.phone || loadingCode || isDisabledPhone } 
+                                    placeholder={guarantor?.phone ? guarantor.phone : "Enter your phone number"}
                                     className="col-span-3"
                                     defaultCountry="GH"
                                     {...field}

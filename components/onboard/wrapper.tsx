@@ -8,23 +8,118 @@ import { useEffect } from "react"
 import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
 import { useGetOperator } from "@/hooks/useGetOperator"
+import { useGetGuarantor } from "@/hooks/useGetGuarantor"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { DoorOpen, PhoneCall, UserRoundCheck, UserRoundSearch } from "lucide-react"
-import { VerifyKYC } from "@/components/onboard/verifyKYC"
-import { VerifyContact } from "@/components/onboard/verifyContact"
+import { BanknoteArrowUp, CheckCheck, DoorOpen, PhoneCall, UserRoundCheck, UserRoundSearch } from "lucide-react"
+import { VerifyOperatorKYC } from "@/components/onboard/verifyOperatorKYC"
+import { VerifyOperatorContact } from "@/components/onboard/verifyOperatorContact"
+import { VerifyGuarantorKYC } from "@/components/onboard/verifyGuarantorKYC"
+import { VerifyGuarantorContact } from "@/components/onboard/verifyGuarantorContact"
 import { usePrivy } from "@privy-io/react-auth"
 
 
-export function Wrapper() {
+export function Wrapper() { 
 
     const { user } = usePrivy()
     console.log(user)
     console.log(user?.wallet?.address)
     const address = user?.wallet?.address as `0x${string}`
     
-    const { operator, loading, getOperatorSync } = useGetOperator(address!)
+    const { operator, loading: operatorLoading, getOperatorSync } = useGetOperator(address!)
     console.log(operator);
-    const router = useRouter()  
+    const { guarantor, loading: guarantorLoading, getGuarantorSync } = useGetGuarantor(address!)
+    console.log(guarantor);
+    const router = useRouter()
+
+    // Determine current step (1-7)
+    const getCurrentStep = () => {
+        // Step 1: Operator contact not verified
+        if (!operator?.address) return 1
+        // Step 2: Operator contact verified but KYC not submitted
+        if (operator?.address && (!operator?.national || operator?.national?.length === 0)) return 2
+        // Step 3: Operator KYC submitted but not compliant
+        if (operator?.national && operator?.national?.length > 0 && !operator?.compliant) return 3
+        // Step 4: Operator compliant, guarantor contact not verified
+        if (operator?.compliant && !guarantor?.address) return 4
+        // Step 5: Guarantor contact verified but KYC not submitted
+        if (operator?.compliant && guarantor?.address && (!guarantor?.national || guarantor?.national?.length === 0)) return 5
+        // Step 6: Guarantor KYC submitted but not compliant
+        if (operator?.compliant && guarantor?.national && guarantor?.national?.length > 0 && !guarantor?.compliant) return 6
+        // Step 7: Both compliant
+        if (operator?.compliant && guarantor?.compliant) return 7
+        return 1
+    }
+
+    const currentStep = getCurrentStep()
+
+    // Progress indicator component
+    const ProgressIndicator = () => {
+
+        return (
+            <div className="flex flex-col w-full max-w-4xl">
+                <div className="flex flex-col items-center justify-center w-full">
+                    {/* First row: Steps 1-4 */}
+                    <div className="flex items-center justify-center gap-2 sm:gap-4 w-full min-w-[350px] md:min-w-[600px]">
+                        <div className="flex flex-col w-14 items-center justify-center">
+                            <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 1 && "bg-yellow-500" } ${currentStep > 1 && "bg-green-500"}`}>{currentStep == 1 && "1" }{currentStep > 1 && <CheckCheck/> }</p>
+                            <p className="text-[9px] text-center">Operator Contact</p>
+                        </div>
+                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                            <div className="w-full h-1 bg-gray-300 rounded-full"/>
+                        </div>
+
+                        <div className="flex flex-col w-14 items-center justify-center">
+                            <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 2 && "bg-yellow-500" } ${currentStep > 2 && "bg-green-500"}`}>{currentStep <= 2 && "2" }{currentStep > 2 && <CheckCheck/> }</p>
+                            <p className="text-[9px] text-center">Operator KYC</p>
+                        </div>
+
+                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                            <div className="w-full h-1 bg-gray-300 rounded-full"/>
+                        </div>
+                        
+                        <div className="flex flex-col w-14 items-center justify-center">
+                            <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 3 && "bg-yellow-500" } ${currentStep > 3 && "bg-green-500"}`}>{currentStep <= 3 && "3" }{currentStep > 3 && <CheckCheck/> }</p>
+                            <p className="text-[9px] text-center">Operator Pending</p>
+                        </div>
+                        
+                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                            <div className="w-full h-1 bg-gray-300 rounded-full"/>
+                        </div>
+
+                        <div className="flex flex-col w-14 items-center justify-center">
+                            <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 4 && "bg-yellow-500" } ${currentStep > 4 && "bg-green-500"}`}>{currentStep <= 4 && "4" }{currentStep > 4 && <CheckCheck/> }</p>
+                            <p className="text-[9px] text-center">Guarantor Contact</p>
+                        </div>
+                    </div>
+                    {/* Second row: Steps 5-7 */}
+                    <div className="flex items-center justify-center gap-2 sm:gap-4 w-full min-w-[250px] md:min-w-[450px]">
+                        <div className="flex flex-col w-14 items-center justify-center">
+                            <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 5 && "bg-yellow-500" } ${currentStep > 5 && "bg-green-500"}`}>{currentStep <= 5 && "5" }{currentStep > 5 && <CheckCheck/> }</p>
+                            <p className="text-[9px] text-center">Guarantor KYC</p>
+                        </div>
+
+                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                            <div className="w-full h-1 bg-gray-300 rounded-full"/>
+                        </div>
+                        
+                        <div className="flex flex-col w-14 items-center justify-center">
+                            <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 6 && "bg-yellow-500" } ${currentStep > 6 && "bg-green-500"}`}>{currentStep <= 6 && "6" }{currentStep > 6 && <CheckCheck/> }</p>
+                            <p className="text-[9px] text-center">Guarantor Pending</p>
+                        </div>
+                        
+                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                            <div className="w-full h-1 bg-gray-300 rounded-full"/>
+                        </div>
+                        
+                        <div className="flex flex-col w-14 items-center justify-center">
+                            <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 7 && "bg-yellow-500" } ${currentStep > 7 && "bg-green-500"}`}>{currentStep <= 7 && "7" }{currentStep > 7 && <CheckCheck/> }</p>
+                            <p className="text-[9px] text-center">Rresevation Fee</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }  
 
 
     const compliantQueryClient = useQueryClient()
@@ -56,7 +151,7 @@ export function Wrapper() {
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
             {
-                loading || compliantLoading
+                operatorLoading || guarantorLoading || compliantLoading
                 ? (
                     <div className="flex h-full justify-center items-center text-2xl font-bold">
                         <p>Loading...</p>
@@ -78,134 +173,107 @@ export function Wrapper() {
                             <div className="flex w-full h-full justify-center"> 
                                 <div className="flex w-full h-full max-w-[66rem] gap-4">
                                     <div className="flex flex-col w-full h-full items-center justify-center max-md:pt-18 gap-4">
-                                        
+                                        <ProgressIndicator />
+                                        {/**operator */}
                                         {
-                                            operator?.address 
-                                            ? (
+                                            !operator?.compliant && !guarantor?.compliant
+                                            && (
                                                 <>
-                                                   {
-                                                    operator?.national && operator?.national?.length > 0
-                                                    ? (
-                                                        <>
-                                                            <div className="w-full max-w-md mb-4">
-                                                                <div className="flex items-center justify-between">
-                                                                    {/* Step 1 - Completed */}
-                                                                    <div className="flex flex-col items-center flex-1">
-                                                                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
-                                                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                                            </svg>
-                                                                        </div>
-                                                                        <p className="text-xs mt-2 text-center text-muted-foreground">Verify Contact</p>
-                                                                    </div>
-                                                                    {/* Connector - Completed */}
-                                                                    <div className="flex-1 h-1 bg-green-500 mx-2"></div>
-                                                                    {/* Step 2 - Completed */}
-                                                                    <div className="flex flex-col items-center flex-1">
-                                                                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
-                                                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                                            </svg>
-                                                                        </div>
-                                                                        <p className="text-xs mt-2 text-center text-muted-foreground">Verify KYC</p>
-                                                                    </div>
-                                                                    {/* Connector - Completed */}
-                                                                    <div className="flex-1 h-1 bg-green-500 mx-2"></div>
-                                                                    {/* Step 3 - Active */}
-                                                                    <div className="flex flex-col items-center flex-1">
-                                                                        <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
-                                                                            3
-                                                                        </div>
-                                                                        <p className="text-xs mt-2 text-center font-semibold">Submitted</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <UserRoundCheck className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
-                                                            <p className="text-2xl max-md:text-xl text-center font-bold">KYC submitted successfully.</p>
-                                                            <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your KYC is pending verification. Please wait while we review your documents.</p>
-                                                        </>
-                                                    )
-                                                    : (
-                                                        <>
-                                                            <div className="w-full max-w-md mb-4">
-                                                                <div className="flex items-center justify-between">
-                                                                    {/* Step 1 - Completed */}
-                                                                    <div className="flex flex-col items-center flex-1">
-                                                                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
-                                                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                                            </svg>
-                                                                        </div>
-                                                                        <p className="text-xs mt-2 text-center text-muted-foreground">Verify Contact</p>
-                                                                    </div>
-                                                                    {/* Connector - Completed */}
-                                                                    <div className="flex-1 h-1 bg-green-500 mx-2"></div>
-                                                                    {/* Step 2 - Active */}
-                                                                    <div className="flex flex-col items-center flex-1">
-                                                                        <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
-                                                                            2
-                                                                        </div>
-                                                                        <p className="text-xs mt-2 text-center font-semibold">Verify KYC</p>
-                                                                    </div>
-                                                                    {/* Connector - Pending */}
-                                                                    <div className="flex-1 h-1 bg-gray-300 mx-2"></div>
-                                                                    {/* Step 3 - Pending */}
-                                                                    <div className="flex flex-col items-center flex-1">
-                                                                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 font-bold">
-                                                                            3
-                                                                        </div>
-                                                                        <p className="text-xs mt-2 text-center text-muted-foreground">Submitted</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
-                                                            <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
-                                                            <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC by uploading your national ID and license.</p>
-                                                        </>
-                                                    )
-                                                   }
-                                                   <VerifyKYC address={address!} operator={operator!} getOperatorSync={getOperatorSync} />
+                                                    {
+                                                        operator?.address 
+                                                        ? (
+                                                            <>
+                                                            {
+                                                                operator?.national && operator?.national?.length > 0
+                                                                ? (
+                                                                    <>
+                                                                        <UserRoundCheck className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                                                                        <p className="text-2xl max-md:text-xl text-center font-bold">KYC submitted successfully.</p>
+                                                                        <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your KYC is pending verification. Please wait while we review your documents.</p>
+                                                                    </>
+                                                                )
+                                                                : (
+                                                                    <>
+                                                                        <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                                                                        <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Identity.</p>
+                                                                        <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete your KYC by uploading your national ID and license.</p>
+                                                                    </>
+                                                                )
+                                                            }
+                                                            <VerifyOperatorKYC address={address!} operator={operator!} getOperatorSync={getOperatorSync} />
+                                                            </>
+                                                        )
+                                                        : (
+                                                            <>
+                                                                <PhoneCall className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                                                                <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Contact.</p>
+                                                                <p className="text-sm max-md:text-xs text-center text-muted-foreground">Please ensure you have a WhatsApp account linked to your active phone number.</p>
+                                                                <VerifyOperatorContact address={address!} operator={operator!} getOperatorSync={getOperatorSync} />
+                                                            </>
+                                                        )
+                                                        
+                                                    }
                                                 </>
                                             )
-                                            : (
-                                                <>
-                                                    <div className="w-full max-w-md mb-4">
-                                                        <div className="flex items-center justify-between">
-                                                            {/* Step 1 - Active */}
-                                                            <div className="flex flex-col items-center flex-1">
-                                                                <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold">
-                                                                    1
-                                                                </div>
-                                                                <p className="text-xs mt-2 text-center font-semibold">Verify Contact</p>
-                                                            </div>
-                                                            {/* Connector - Pending */}
-                                                            <div className="flex-1 h-1 bg-gray-300 mx-2"></div>
-                                                            {/* Step 2 - Pending */}
-                                                            <div className="flex flex-col items-center flex-1">
-                                                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 font-bold">
-                                                                    2
-                                                                </div>
-                                                                <p className="text-xs mt-2 text-center text-muted-foreground">Verify KYC</p>
-                                                            </div>
-                                                            {/* Connector - Pending */}
-                                                            <div className="flex-1 h-1 bg-gray-300 mx-2"></div>
-                                                            {/* Step 3 - Pending */}
-                                                            <div className="flex flex-col items-center flex-1">
-                                                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 font-bold">
-                                                                    3
-                                                                </div>
-                                                                <p className="text-xs mt-2 text-center text-muted-foreground">Submitted</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <PhoneCall className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
-                                                    <p className="text-2xl max-md:text-xl text-center font-bold">Verify your Contact.</p>
-                                                    <p className="text-sm max-md:text-xs text-center text-muted-foreground">Please ensure you have a WhatsApp account linked to your active phone number.</p>
-                                                    <VerifyContact address={address!} operator={operator!} getOperatorSync={getOperatorSync} />
-                                                </>
-                                            )
-                                            
                                         }
+                                        {/**guarantor */}
+                                        {
+                                            operator?.compliant && !guarantor?.compliant
+                                            && (
+                                                <>
+                                                    {
+                                                        guarantor?.address 
+                                                        ? (
+                                                            <>
+                                                            {
+                                                                guarantor?.national && guarantor?.national?.length > 0
+                                                                ? (
+                                                                    <>
+                                                                        <UserRoundCheck className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                                                                        <p className="text-2xl max-md:text-xl text-center font-bold">KYC submitted successfully.</p>
+                                                                        <p className="text-sm max-md:text-xs text-center text-muted-foreground">Your Guarantor KYC is pending verification. Please wait while we review your documents.</p>
+                                                                    </>
+                                                                )
+                                                                : (
+                                                                    <>
+                                                                        <UserRoundSearch className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                                                                        <p className="text-2xl max-md:text-xl text-center font-bold">Verify Guarantor Identity.</p>
+                                                                        <p className="text-sm max-md:text-xs text-center text-muted-foreground">Complete guarantor KYC by uploading national ID and license.</p>
+                                                                    </>
+                                                                )
+                                                            }
+                                                            <VerifyGuarantorKYC address={address!} guarantor={guarantor!} getGuarantorSync={getGuarantorSync} />
+                                                            </>
+                                                        )
+                                                        : (
+                                                            <>
+                                                                <PhoneCall className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                                                                <p className="text-2xl max-md:text-xl text-center font-bold">Verify Guarantor Contact.</p>
+                                                                <p className="text-sm max-md:text-xs text-center text-muted-foreground">Please ensure guarantor has a WhatsApp account linked to their active phone number.</p>
+                                                                <VerifyGuarantorContact address={address!} guarantor={guarantor!} getGuarantorSync={getGuarantorSync} />
+                                                            </>
+                                                        )
+                                                        
+                                                    }
+                                                </>
+                                            )
+                                        }
+                                        {/**complete */}
+                                        {
+                                            operator?.compliant && guarantor?.compliant
+                                            && (
+                                                <>
+                                                    <BanknoteArrowUp className="h-40 w-40 max-md:h-30 max-md:w-30 text-green-500" />
+                                                    <p className="text-2xl max-md:text-xl text-center font-bold">Onboarding Complete!</p>
+                                                    <p className="text-sm max-md:text-xs text-center text-muted-foreground">{"Both operator and guarantor have been verified. Pay the reservation fee to complete your onboarding."}</p>
+                                                </>
+                                            )
+                                        }
+                                        
+                                        
+                                        
+                                        
+                                        
                                     </div>
                                     
                                 </div>

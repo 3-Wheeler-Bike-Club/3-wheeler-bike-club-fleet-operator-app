@@ -40,13 +40,13 @@ const ManualFormSchema = z.object({
     location: z.string(),
 })
 
-interface VerifyKYCProps {
+interface VerifyOperatorKYCProps {
   address: `0x${string}`
   operator: Operator
   getOperatorSync: () => void
 }
 
-export function VerifyKYC({ address, operator, getOperatorSync }: VerifyKYCProps) {
+export function VerifyOperatorKYC({ address, operator, getOperatorSync }: VerifyOperatorKYCProps) {
 
   const [nationalFiles, setNationalFiles] = useState <File[] | null> (null);
   const [licenseFiles, setLicenseFiles] = useState <File[] | null> (null);
