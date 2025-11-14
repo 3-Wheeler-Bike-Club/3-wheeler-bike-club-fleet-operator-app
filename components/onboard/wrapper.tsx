@@ -62,58 +62,58 @@ export function Wrapper() {
                     <div className="flex items-center justify-center gap-2 sm:gap-4 w-full min-w-[350px] md:min-w-[600px]">
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 1 && "bg-yellow-500" } ${currentStep > 1 && "bg-green-500"}`}>{currentStep == 1 && "1" }{currentStep > 1 && <CheckCheck/> }</p>
-                            <p className="text-[9px] text-center">Operator Contact</p>
+                            <p className="text-[10px] text-center">Operator Contact</p>
                         </div>
-                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                        <div className="flex flex-col w-8">
                             <div className="w-full h-1 bg-gray-300 rounded-full"/>
                         </div>
 
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 2 && "bg-yellow-500" } ${currentStep > 2 && "bg-green-500"}`}>{currentStep <= 2 && "2" }{currentStep > 2 && <CheckCheck/> }</p>
-                            <p className="text-[9px] text-center">Operator KYC</p>
+                            <p className="text-[10px] text-center">Operator KYC</p>
                         </div>
 
-                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                        <div className="flex flex-col w-8">
                             <div className="w-full h-1 bg-gray-300 rounded-full"/>
                         </div>
                         
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 3 && "bg-yellow-500" } ${currentStep > 3 && "bg-green-500"}`}>{currentStep <= 3 && "3" }{currentStep > 3 && <CheckCheck/> }</p>
-                            <p className="text-[9px] text-center">Operator Pending</p>
+                            <p className="text-[10px] text-center">Operator Pending</p>
                         </div>
                         
-                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                        <div className="flex flex-col w-8">
                             <div className="w-full h-1 bg-gray-300 rounded-full"/>
                         </div>
 
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 4 && "bg-yellow-500" } ${currentStep > 4 && "bg-green-500"}`}>{currentStep <= 4 && "4" }{currentStep > 4 && <CheckCheck/> }</p>
-                            <p className="text-[9px] text-center">Guarantor Contact</p>
+                            <p className="text-[10px] text-center">Guarantor Contact</p>
                         </div>
                     </div>
                     {/* Second row: Steps 5-7 */}
                     <div className="flex items-center justify-center gap-2 sm:gap-4 w-full min-w-[250px] md:min-w-[450px]">
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 5 && "bg-yellow-500" } ${currentStep > 5 && "bg-green-500"}`}>{currentStep <= 5 && "5" }{currentStep > 5 && <CheckCheck/> }</p>
-                            <p className="text-[9px] text-center">Guarantor KYC</p>
+                            <p className="text-[10px] text-center">Guarantor KYC</p>
                         </div>
 
-                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                        <div className="flex flex-col w-8">
                             <div className="w-full h-1 bg-gray-300 rounded-full"/>
                         </div>
                         
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 6 && "bg-yellow-500" } ${currentStep > 6 && "bg-green-500"}`}>{currentStep <= 6 && "6" }{currentStep > 6 && <CheckCheck/> }</p>
-                            <p className="text-[9px] text-center">Guarantor Pending</p>
+                            <p className="text-[10px] text-center">Guarantor Pending</p>
                         </div>
                         
-                        <div className="flex flex-col flex-1 min-w-[20px] max-w-[60px]">
+                        <div className="flex flex-col w-8">
                             <div className="w-full h-1 bg-gray-300 rounded-full"/>
                         </div>
                         
                         <div className="flex flex-col w-14 items-center justify-center">
                             <p className={`bg-gray-300 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base ${currentStep == 7 && "bg-yellow-500" } ${currentStep > 7 && "bg-green-500"}`}>{currentStep <= 7 && "7" }{currentStep > 7 && <CheckCheck/> }</p>
-                            <p className="text-[9px] text-center">Rresevation Fee</p>
+                            <p className="text-[10px] text-center">Reservation Fee</p>
                         </div>
                     </div>
                 </div>
