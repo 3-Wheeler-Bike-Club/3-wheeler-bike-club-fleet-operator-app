@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label"
 import { getOperatorByEmailAction } from "@/app/actions/kyc/getOperatorByEmailAction"
 import { sendVerifyEmail } from "@/app/actions/mail/sendVerifyEmail"
 import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
-import { Input } from "../ui/input"
+import { Input } from "@/components/ui/input"
 
   
 
