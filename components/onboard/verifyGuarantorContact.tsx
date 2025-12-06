@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label"
 import { getOperatorByEmailAction } from "@/app/actions/kyc/getOperatorByEmailAction"
 import { sendVerifyEmail } from "@/app/actions/mail/sendVerifyEmail"
 import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
+import { Input } from "../ui/input"
 
   
 
@@ -334,9 +335,136 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
                 }
               </DrawerDescription>
           </DrawerHeader>
-          {/**phone verification w/ email from privy */}
           {
-            emailFromPrivy && !verifiedPhone && (
+            !verifiedEmail && !verifiedPhone && (
+              <>
+                <div className="flex flex-col p-4 w-full pb-10">
+                  <Form {...emailForm}>
+                    <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-6">
+                      <div className="flex w-full justify-between gap-2">
+                        <div className="flex flex-col w-full">
+                          <FormField
+                              control={emailForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                  <FormItem>
+                                      <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                      <FormLabel>Enter your email address</FormLabel>
+                                          <FormControl >
+                                              <Input autoComplete="off" disabled={ !!guarantor || !!email || loadingCode || isDisabledEmail } className="col-span-3" placeholder={""} {...field} />
+                                          </FormControl>
+                                      </div>
+                                  </FormItem>
+                              )}
+                          />
+                        </div>
+                        <div className="flex items-end justify-center w-2/10">
+                            <Button
+                              className="w-12"
+                              disabled={loadingCode || isDisabledEmail}
+                              type="submit"
+                            >
+                              {
+                                loadingCode
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Send className="w-4 h-4" />
+                              }
+                            </Button>
+                        </div>
+                      </div>
+                      
+                    </form>
+                    {
+                      tryAnotherEmail && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            Did you enter the wrong email?{" "}
+                            <span 
+                              onClick={() => {
+                                setEmail(null);
+                                setTryAnotherEmail(false);
+                                setTokenEmail(null);
+                                setIsDisabledEmail(false);
+                                emailForm.reset();
+                                setLoadingLinkingEmail(false);
+                              }} 
+                              className="text-yellow-600 font-bold"
+                            >
+                              Try another one
+                            </span>.
+                          </p>
+                        </div>
+                      )
+                    }
+                    {
+                      countdownEmail > 0 && (
+                        <div className="flex flex-col w-full">
+                          <p className="text-[0.6rem] text-gray-500">
+                            You can only send a new code in <span className="text-yellow-600">{countdownEmail}</span> seconds.
+                          </p>
+                        </div>
+                      )
+                    }
+                  </Form>
+                </div> 
+                <>
+                  <div className="flex flex-col p-4 w-full">
+                    <Form {...emailCodeForm}>
+                      <form onSubmit={emailCodeForm.handleSubmit(onSubmitEmailCode)} className="space-y-6">
+                        <FormField
+                          control={emailCodeForm.control}
+                          name="emailCode"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FormLabel>Enter One-Time Password</FormLabel>
+                                <FormControl>
+                                  <div className="flex justify-center">
+                                    <InputOTP pattern={REGEXP_ONLY_DIGITS } maxLength={6} disabled={loadingLinkingEmail || !email} {...field} className="w-full ">
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={0} />
+                                        <InputOTPSlot index={1} />
+                                        <InputOTPSlot index={2} />
+                                      </InputOTPGroup>
+                                      <InputOTPSeparator />
+                                      <InputOTPGroup>
+                                        <InputOTPSlot index={3} />
+                                        <InputOTPSlot index={4} />
+                                        <InputOTPSlot index={5} />
+                                      </InputOTPGroup>
+                                    </InputOTP>
+                                  </div>
+                                </FormControl>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <div className="flex justify-between">
+                          <div/>
+                          <Button
+                            className="w-36"
+                            disabled={loadingLinkingEmail || emailCodeForm.getValues("emailCode")?.length < 6 || !email}
+                            type="submit"
+                          >
+                            {
+                              loadingLinkingEmail
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <Link />
+                            }
+                            <p>Link Email</p>
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  </div>  
+                </>
+              </>
+            )
+          }
+          {/**phone verification w/o email from privy */}
+          {
+            verifiedEmail && !verifiedPhone && (
               <>
                 <div className="flex flex-col p-4 w-full pb-10">
                   <Form {...phoneForm}>
@@ -471,13 +599,13 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
           }
 
 
-          {/**terms and conditions w/ email from privy */}
+          {/**terms and conditions w/o email from privy */}
           {
-            emailFromPrivy && verifiedPhone && (
+            verifiedEmail && verifiedPhone && (
               <>
                   <div className="flex flex-col p-4 w-full">
                     <Form {...termsForm}>
-                      <form onSubmit={termsForm.handleSubmit(onSubmitTermsWithPrivyEmail)} className="space-y-6">
+                      <form onSubmit={termsForm.handleSubmit(onSubmitTerms)} className="space-y-6">
                       <FormField
                       control={termsForm.control}
                       name="terms"
@@ -536,11 +664,3 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
     </Drawer>
   );
 }
-
-/*
-
-*/
-
-/*
-
-*/
