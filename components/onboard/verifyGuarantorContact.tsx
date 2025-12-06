@@ -20,11 +20,18 @@ import { getOperatorByPhoneAction } from "@/app/actions/kyc/getOperatorByPhoneAc
 import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { usePrivy } from "@privy-io/react-auth"
+import { getOperatorByEmailAction } from "@/app/actions/kyc/getOperatorByEmailAction"
+import { sendVerifyEmail } from "@/app/actions/mail/sendVerifyEmail"
+import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 
   
 
-
+const emailFormSchema = z.object({
+  email: z.string().email(),
+})
+const emailCodeFormSchema = z.object({
+  emailCode: z.string().min(6).max(6),
+})
 
 const phoneFormSchema = z.object({
   phone: z.string()
@@ -45,22 +52,38 @@ interface VerifyGuarantorContactProps {
 
 export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }: VerifyGuarantorContactProps) {
 
-  const { user } = usePrivy()
-  const emailFromPrivy = user?.email?.address
-  console.log(emailFromPrivy)
-
+  const [email, setEmail] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
+  const [tryAnotherEmail, setTryAnotherEmail] = useState(false)
   const [tryAnotherPhone, setTryAnotherPhone] = useState(false);
+  const [tokenEmail, setTokenEmail] = useState<string | null>(null);
   const [tokenPhone, setTokenPhone] = useState<string | null>(null);
+  const [loadingLinkingEmail, setLoadingLinkingEmail] = useState(false);
   const [loadingLinkingPhone, setLoadingLinkingPhone] = useState(false);
   const [loadingLinkingTerms, setLoadingLinkingTerms] = useState(false);
   const [loadingCode, setLoadingCode] = useState(false);
+  const [isDisabledEmail, setIsDisabledEmail] = useState(false);
   const [isDisabledPhone, setIsDisabledPhone] = useState(false);
+  const [countdownEmail, setCountdownEmail] = useState(0);
   const [countdownPhone, setCountdownPhone] = useState(0);
+
+  const [verifiedEmail, setVerifiedEmail] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState(false);
 
   
+  const emailForm = useForm < z.infer < typeof emailFormSchema >> ({
+    resolver: zodResolver(emailFormSchema),
+    defaultValues: {
+      email: undefined,
+    },
+  })
 
+  const emailCodeForm = useForm < z.infer < typeof emailCodeFormSchema >> ({
+    resolver: zodResolver(emailCodeFormSchema),
+    defaultValues: {
+      emailCode: undefined,
+    },
+  })
 
   const phoneForm = useForm < z.infer < typeof phoneFormSchema >> ({
     resolver: zodResolver(phoneFormSchema),
@@ -83,7 +106,73 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
     },
   })
 
+  async function onSubmitEmail(values: z.infer < typeof emailFormSchema > ) {
+    try {
+      setLoadingCode(true);
+      //check if email is already in use
+      const operator = await getOperatorByEmailAction(values.email.toLowerCase());
+      if(operator) {
+        toast.error("Email already in use", {
+          description: `Please enter a different email address`,
+        })
+        setLoadingCode(false);
+      } else {
+        //send email to validate return if email is invalid
+        const token = await sendVerifyEmail(values.email);
 
+        if(token) {
+          setEmail(values.email);
+          setTokenEmail(token);
+          toast.success("Email Verification code sent", {
+            description: `Check your email for the verification code`,
+          })
+          setLoadingCode(false);
+          setIsDisabledEmail(true);
+          setCountdownEmail(60);
+        } 
+      }
+      
+    } catch (error) {
+      console.error("Send email code error", error);
+      toast.error("Email Verification failed", {
+        description: `Something went wrong, Enter a valid email address`,
+      })
+      setLoadingCode(false);
+    }
+  }
+  async function onSubmitEmailCode(values: z.infer < typeof emailCodeFormSchema > ) {
+    try {
+      setLoadingLinkingEmail(true);
+      if(tokenEmail) {
+        const verifiedEmailCode = await verifyMailCode(tokenEmail, values.emailCode);
+        if(verifiedEmailCode) {
+          setVerifiedEmail(true);
+          if(verifiedEmailCode) {
+            toast.success("Email verified successfully", {
+              description: `You can now complete your KYC`,
+            })
+            setLoadingLinkingEmail(false)
+          } else {
+            toast.error("Failed to verify email.", {
+              description: `Invalid code or expired, please try again`,
+            })
+          }
+          setLoadingLinkingEmail(false);
+        } else {
+          toast.error("Failed to verify email.", {
+            description: `Invalid code or expired, please try again`,
+          })
+          setLoadingLinkingEmail(false);
+        }
+      }
+    } catch (error) {
+      console.error("Verify email error", error);
+      toast.error("Failed to verify email.", {
+        description: `Invalid code or expired, please try again`,
+      })
+      setLoadingLinkingEmail(false);
+    }
+  }
   async function onSubmitPhone(values: z.infer < typeof phoneFormSchema > ) {
     setLoadingCode(true);
     try {
@@ -144,18 +233,19 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
   }
 
 
-  async function onSubmitTermsWithPrivyEmail(values: z.infer < typeof termsFormSchema > ) {
+  async function onSubmitTerms(values: z.infer < typeof termsFormSchema > ) {
     setLoadingLinkingTerms(true);
     try {
-      if (emailFromPrivy && values.terms) {
-        //post liquidity provider preupload
+      console.log(values);
+      if (values.terms) {
+        //post profile preupload
         
         const postGuarantor = await postGuarantorAction(
           address!,
-          emailFromPrivy!.toLowerCase(),
+          email!.toLowerCase(),
           phone!,
         );
-          getGuarantorSync();
+        getGuarantorSync();
         if (postGuarantor) {
           toast.success("Contact saved successfully", {
             description: `You can now complete your KYC`,
@@ -221,22 +311,25 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
                 Verify Contact Information 
               </DrawerTitle>
               <DrawerDescription className="max-md:text-[0.9rem]">
-               
-                {/**phone verification w/ email from privy */}
                 {
-                  (emailFromPrivy && !verifiedPhone) && (
-                    <>
-                      Step 1 of 2: Phone Verification
-                    </>
+                  !verifiedEmail && !verifiedPhone && (
+                    <p>
+                      Step 1 of 3: Email Verification
+                    </p>
                   )
                 }
-
-                {/**terms and conditions w/ email from privy */}
                 {
-                  emailFromPrivy && verifiedPhone && (
-                    <>
-                      Step 2 of 2: Terms and Conditions
-                    </>
+                  verifiedEmail && !verifiedPhone && (
+                    <p>
+                      Step 2 of 3: Phone Verification
+                    </p>
+                  )
+                }
+                {
+                  verifiedEmail && verifiedPhone && (
+                    <p>
+                      Step 3 of 3: Terms and Conditions
+                    </p>
                   ) 
                 }
               </DrawerDescription>
