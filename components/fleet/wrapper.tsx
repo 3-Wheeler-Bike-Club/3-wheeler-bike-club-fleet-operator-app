@@ -45,7 +45,7 @@ export function Wrapper() {
         console.log(compliant)
 
         if (compliant === false) {
-            router.replace("/kyc")
+            router.replace("/onboard")
         }
     }, [router, compliant])
 
