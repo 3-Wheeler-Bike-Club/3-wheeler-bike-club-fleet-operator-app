@@ -14,7 +14,7 @@ export async function updateOperatorAction(
     headshot: string
 ) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateOperator`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/onboard/updateOperator`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

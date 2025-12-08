@@ -2,7 +2,7 @@
 
 export async function getOperatorByEmailAction(email: string) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getOperatorByEmail`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/onboard/getOperatorByEmail`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

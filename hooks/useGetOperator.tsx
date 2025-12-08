@@ -1,4 +1,4 @@
-import { getOperatorAction } from "@/app/actions/kyc/getOperatorAction"
+import { getOperatorAction } from "@/app/actions/onboard/getOperatorAction"
 import { useEffect, useState } from "react"
 
 
