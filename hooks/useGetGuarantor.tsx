@@ -1,4 +1,4 @@
-import { getGuarantorAction } from "@/app/actions/kyc/getGuarantorAction"
+import { getGuarantorAction } from "@/app/actions/onboard/getGuarantorAction"
 import { useEffect, useState } from "react"
 
 

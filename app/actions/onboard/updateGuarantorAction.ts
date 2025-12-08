@@ -13,7 +13,7 @@ export async function updateGuarantorAction(
     headshot: string
 ) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/updateGuarantor`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/onboard/updateGuarantor`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

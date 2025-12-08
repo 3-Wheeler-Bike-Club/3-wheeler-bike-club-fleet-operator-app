@@ -1,8 +1,8 @@
 "use server"
 
-export async function getGuarantorAction(address: string) {
+export async function getOperatorAction(address: string) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getGuarantor`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/onboard/getOperator`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -11,7 +11,7 @@ export async function getGuarantorAction(address: string) {
             body: JSON.stringify({ address: address })
         })
         if (!response.ok) {
-            throw new Error("Failed to get guarantor")
+            throw new Error("Failed to get operator")
         }
         return response.json()
     } catch (error) {

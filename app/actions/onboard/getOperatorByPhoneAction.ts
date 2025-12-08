@@ -2,7 +2,7 @@
 
 export async function getOperatorByPhoneAction(phone: string) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getOperatorByPhone`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/onboard/getOperatorByPhone`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

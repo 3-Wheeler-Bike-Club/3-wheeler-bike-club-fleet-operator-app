@@ -2,7 +2,7 @@
 
 export async function getGuarantorByPhoneAction(phone: string) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/getGuarantorByPhone`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/onboard/getGuarantorByPhone`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

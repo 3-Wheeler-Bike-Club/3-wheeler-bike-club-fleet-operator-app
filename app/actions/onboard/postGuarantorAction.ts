@@ -1,13 +1,13 @@
 "use server"
 
 
-export async function postOperatorAction(
+export async function postGuarantorAction(
     address: `0x${string}`,
     email: string,
     phone: string,
 ) {
     try {
-        const response = await fetch(`${process.env.BASE_URL}/api/kyc/postOperator`, {
+        const response = await fetch(`${process.env.BASE_URL}/api/onboard/postGuarantor`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -20,7 +20,7 @@ export async function postOperatorAction(
             })
         })
         if (!response.ok) {
-            throw new Error("Failed to post operator")
+            throw new Error("Failed to post guarantor")
         }
         return response.json()
     } catch (error) { 
