@@ -24,6 +24,8 @@ import { getOperatorByEmailAction } from "@/app/actions/onboard/getOperatorByEma
 import { sendVerifyEmail } from "@/app/actions/mail/sendVerifyEmail"
 import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 import { Input } from "@/components/ui/input"
+import { getGuarantorByEmailAction } from "@/app/actions/onboard/getGuarantorByEmailAction"
+import { getGuarantorByPhoneAction } from "@/app/actions/onboard/getGuarantorByPhoneAction"
 
   
 
@@ -107,16 +109,25 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
     },
   })
 
+  
   async function onSubmitEmail(values: z.infer < typeof emailFormSchema > ) {
     try {
       setLoadingCode(true);
       //check if email is already in use
       const operator = await getOperatorByEmailAction(values.email.toLowerCase());
+      const guarantor = await getGuarantorByEmailAction(values.email.toLowerCase());
       if(operator) {
-        toast.error("Email already in use", {
+        toast.error("Email used by another operator", {
           description: `Please enter a different email address`,
         })
         setLoadingCode(false);
+        return;
+      } else if(guarantor) {
+        toast.error("Email used by someone else's guarantor", {
+          description: `Please enter a different email address`,
+        })
+        setLoadingCode(false);
+        return;
       } else {
         //send email to validate return if email is invalid
         const token = await sendVerifyEmail(values.email);
@@ -131,8 +142,8 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
           setIsDisabledEmail(true);
           setCountdownEmail(60);
         } 
+        return;
       }
-      
     } catch (error) {
       console.error("Send email code error", error);
       toast.error("Email Verification failed", {
@@ -174,29 +185,40 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
       setLoadingLinkingEmail(false);
     }
   }
+
+
   async function onSubmitPhone(values: z.infer < typeof phoneFormSchema > ) {
     setLoadingCode(true);
     try {
       //check if phone is already in use
       const operator = await getOperatorByPhoneAction(values.phone);
+      const guarantor = await getGuarantorByPhoneAction(values.phone);
       if(operator) {
-        toast.error("Phone already in use", {
+        toast.error("Phone used by another operator", {
           description: `Please enter a different phone number`,
         })
         setLoadingCode(false);
-      } 
-      setPhone(values.phone);
-      const token = await sendVerifyPhone(values.phone);
-      if(token) {
-        setTokenPhone(token);
-        toast.success("Phone Verification code sent", {
-          description: `Check your phone for the verification code`,
+        return;
+      } else if (guarantor) {
+        toast.error("Phone used by someone else's guarantor", {
+          description: `Please enter a different phone number`,
         })
         setLoadingCode(false);
-        setIsDisabledPhone(true);
-        setCountdownPhone(60);
+        return;
+      } else {
+        const token = await sendVerifyPhone(values.phone);
+        if(token) {
+          setPhone(values.phone);
+          setTokenPhone(token);
+          toast.success("Phone Verification code sent", {
+            description: `Check your phone for the verification code`,
+          })
+          setLoadingCode(false);
+          setIsDisabledPhone(true);
+          setCountdownPhone(60);
+        }
+        return;
       }
-      
     } catch (error) {
       console.error("Send phone code error", error);
       toast.error("Phone Verification failed", {

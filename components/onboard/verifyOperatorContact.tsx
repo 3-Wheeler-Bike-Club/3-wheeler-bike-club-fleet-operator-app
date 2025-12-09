@@ -94,19 +94,22 @@ export function VerifyOperatorContact({ address, operator, getOperatorSync }: Ve
           description: `Please enter a different phone number`,
         })
         setLoadingCode(false);
-      } 
-      setPhone(values.phone);
-      const token = await sendVerifyPhone(values.phone);
-      if(token) {
-        setTokenPhone(token);
-        toast.success("Phone Verification code sent", {
-          description: `Check your phone for the verification code`,
-        })
-        setLoadingCode(false);
-        setIsDisabledPhone(true);
-        setCountdownPhone(60);
-      }
+        return;
+      } else {
+        const token = await sendVerifyPhone(values.phone);
       
+        if(token) {
+          setPhone(values.phone);
+          setTokenPhone(token);
+          toast.success("Phone Verification code sent", {
+            description: `Check your phone for the verification code`,
+          })
+          setLoadingCode(false);
+          setIsDisabledPhone(true);
+          setCountdownPhone(60);
+        }
+        return;
+      } 
     } catch (error) {
       console.error("Send phone code error", error);
       toast.error("Phone Verification failed", {
