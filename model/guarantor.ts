@@ -23,6 +23,9 @@ const GuarantorSchema = new mongoose.Schema(
         lastname: {
             type: String,
         },
+        relationship: {
+            type: String,
+        },
         country: {
             type: String,
         },

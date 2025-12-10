@@ -24,7 +24,7 @@ export const sendWelcomeEmail = async (email: string, type: "operator" | "guaran
                 html: `
                     <p>Hi there,</p>
     
-                    <p>Your have successfully registered to be 3-Wheeler Fleet Operator. You can now start operating your fleet and earn a living of your own.</p>
+                    <p>Your have successfully registered to be a 3-Wheeler Fleet Operator. You can now start operating your fleet and earn a living of your own.</p>
     
                     <p>Thank you for trusting us for a pre-financed 3-wheeler, and as always, drive safe!</p>
     
