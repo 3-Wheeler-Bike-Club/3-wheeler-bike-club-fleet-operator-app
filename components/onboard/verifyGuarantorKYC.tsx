@@ -18,8 +18,8 @@ import { updateGuarantorAction } from "@/app/actions/onboard/updateGuarantorActi
 import { Guarantor } from "@/hooks/useGetGuarantor"
 import { Label } from "@/components/ui/label"
 import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode"
-import { sendVerifySelfMail } from "@/app/actions/mail/sendVerifySelfMail"
-import { sendVerifySelfAdminMail } from "@/app/actions/mail/sendVerifySelfAdminMail"
+import { sendVerifyPendingMail } from "@/app/actions/mail/sendVerifyPendingMail"
+import { sendVerifyPendingAdminMail } from "@/app/actions/mail/sendVerifyPendingAdminMail"
 import { shortenTxt } from "@/utils/shorten"
 
   
@@ -170,14 +170,16 @@ export function VerifyGuarantorKYC({ address, guarantor, getGuarantorSync }: Ver
               uploadHeadshotFiles[0].ufsUrl
             );
             if (updateGuarantor) {
-              await sendVerifySelfMail(
+              await sendVerifyPendingMail(
                 guarantor.email,
-                manualFormValues.firstname
+                manualFormValues.firstname,
+                "guarantor"
               )
-              await sendVerifySelfAdminMail(
+              await sendVerifyPendingAdminMail(
                 manualFormValues.firstname,
                 manualFormValues.othername,
-                manualFormValues.lastname
+                manualFormValues.lastname,
+                "guarantor"
               )
               toast.success("KYC Completed", {
                 description: "Our Team will review your KYC and get back to you shortly",
@@ -742,14 +744,16 @@ export function VerifyGuarantorKYC({ address, guarantor, getGuarantorSync }: Ver
                                           ""
                                         );
                                         if (updateGuarantor) {
-                                          await sendVerifySelfMail(
+                                          await sendVerifyPendingMail(
                                             guarantor.email,
-                                            values.firstname
+                                            values.firstname,
+                                            "guarantor"
                                           )
-                                          await sendVerifySelfAdminMail(
+                                          await sendVerifyPendingAdminMail(
                                             values.firstname,
                                             values.othername,
-                                            values.lastname
+                                            values.lastname,
+                                            "guarantor"
                                           )
                                           toast.success("KYC Completed", {
                                             description: "Our Team will review your KYC and get back to you shortly",

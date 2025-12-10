@@ -18,8 +18,8 @@ import { updateOperatorAction } from "@/app/actions/onboard/updateOperatorAction
 import { Operator } from "@/hooks/useGetOperator"
 import { Label } from "@/components/ui/label"
 import { SelfAppBuilder, SelfQRcode } from "@selfxyz/qrcode"
-import { sendVerifySelfMail } from "@/app/actions/mail/sendVerifySelfMail"
-import { sendVerifySelfAdminMail } from "@/app/actions/mail/sendVerifySelfAdminMail"
+import { sendVerifyPendingMail } from "@/app/actions/mail/sendVerifyPendingMail"
+import { sendVerifyPendingAdminMail } from "@/app/actions/mail/sendVerifyPendingAdminMail"
 import { shortenTxt } from "@/utils/shorten"
 
   
@@ -171,14 +171,16 @@ export function VerifyOperatorKYC({ address, operator, getOperatorSync }: Verify
               uploadHeadshotFiles[0].ufsUrl
             );
             if (updateOperator) {
-              await sendVerifySelfMail(
+              await sendVerifyPendingMail(
                 operator.email,
-                manualFormValues.firstname
+                manualFormValues.firstname,
+                "operator"
               )
-              await sendVerifySelfAdminMail(
+              await sendVerifyPendingAdminMail(
                 manualFormValues.firstname,
                 manualFormValues.othername,
-                manualFormValues.lastname
+                manualFormValues.lastname,
+                "operator"
               )
               toast.success("KYC Completed", {
                 description: "Our Team will review your KYC and get back to you shortly",
@@ -744,14 +746,16 @@ export function VerifyOperatorKYC({ address, operator, getOperatorSync }: Verify
                                           ""
                                         );
                                         if (updateOperator) {
-                                          await sendVerifySelfMail(
+                                          await sendVerifyPendingMail(
                                             operator.email,
-                                            values.firstname
+                                            values.firstname,
+                                            "operator"
                                           )
-                                          await sendVerifySelfAdminMail(
+                                          await sendVerifyPendingAdminMail(
                                             values.firstname,
                                             values.othername,
-                                            values.lastname
+                                            values.lastname,
+                                            "operator"
                                           )
                                           toast.success("KYC Completed", {
                                             description: "Our Team will review your KYC and get back to you shortly",
