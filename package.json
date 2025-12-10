@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@divvi/referral-sdk": "^2.3.0",
     "@hookform/resolvers": "^5.2.2",
     "@privy-io/react-auth": "^3.3.0",
     "@privy-io/wagmi": "^2.0.1",
