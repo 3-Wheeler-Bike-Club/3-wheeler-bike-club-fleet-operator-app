@@ -18,7 +18,9 @@ export function MakeReservation() {
                         <DrawerDescription className="max-md:text-[0.9rem]">
                             Pay to reserve a pre-financed 3-Wheeler.
                         </DrawerDescription>
-                    </DrawerHeader>  
+                    </DrawerHeader>
+                    <div>
+                    </div>  
                 </div>
             </DrawerContent>
         </Drawer>
