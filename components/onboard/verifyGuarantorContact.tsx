@@ -26,7 +26,6 @@ import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 import { Input } from "@/components/ui/input"
 import { getGuarantorByEmailAction } from "@/app/actions/onboard/getGuarantorByEmailAction"
 import { getGuarantorByPhoneAction } from "@/app/actions/onboard/getGuarantorByPhoneAction"
-
   
 
 const emailFormSchema = z.object({
@@ -69,7 +68,6 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
   const [isDisabledPhone, setIsDisabledPhone] = useState(false);
   const [countdownEmail, setCountdownEmail] = useState(0);
   const [countdownPhone, setCountdownPhone] = useState(0);
-
   const [verifiedEmail, setVerifiedEmail] = useState(false);
   const [verifiedPhone, setVerifiedPhone] = useState(false);
 
@@ -130,7 +128,7 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
         return;
       } else {
         //send email to validate return if email is invalid
-        const token = await sendVerifyEmail(values.email);
+        const token = await sendVerifyEmail(values.email, "guarantor");
 
         if(token) {
           setEmail(values.email);
