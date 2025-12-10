@@ -26,6 +26,7 @@ import { verifyMailCode } from "@/app/actions/mail/verifyMailCode"
 import { Input } from "@/components/ui/input"
 import { getGuarantorByEmailAction } from "@/app/actions/onboard/getGuarantorByEmailAction"
 import { getGuarantorByPhoneAction } from "@/app/actions/onboard/getGuarantorByPhoneAction"
+import { sendWelcomeEmail } from "@/app/actions/mail/sendWelcomeMail"
   
 
 const emailFormSchema = z.object({
@@ -259,8 +260,9 @@ export function VerifyGuarantorContact({ address, guarantor, getGuarantorSync }:
     try {
       console.log(values);
       if (values.terms) {
+        //send welcome email
+        await sendWelcomeEmail(email!.toLowerCase(), "guarantor");
         //post profile preupload
-        
         const postGuarantor = await postGuarantorAction(
           address!,
           email!.toLowerCase(),

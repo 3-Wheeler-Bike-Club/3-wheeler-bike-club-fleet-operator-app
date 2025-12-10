@@ -21,6 +21,7 @@ import { verifyPhoneCode } from "@/app/actions/phone/verifyPhoneCode"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { usePrivy } from "@privy-io/react-auth"
+import { sendWelcomeEmail } from "@/app/actions/mail/sendWelcomeMail"
 
   
 
@@ -151,8 +152,10 @@ export function VerifyOperatorContact({ address, operator, getOperatorSync }: Ve
     setLoadingLinkingTerms(true);
     try {
       if (emailFromPrivy && values.terms) {
-        //post liquidity provider preupload
+        //send welcome email
+        await sendWelcomeEmail(emailFromPrivy!.toLowerCase(), "operator");
         
+        //post liquidity provider preupload
         const postOperator = await postOperatorAction(
           address!,
           emailFromPrivy!.toLowerCase(),
