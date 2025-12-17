@@ -124,6 +124,7 @@ export function Wrapper() {
 
 
     const compliantQueryClient = useQueryClient()
+    const fleetOperatorReservationActiveQueryClient = useQueryClient()
     
     const { data: blockNumber } = useBlockNumber({ watch: true })  
 
@@ -139,20 +140,31 @@ export function Wrapper() {
     }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
 
 
+    const { data: fleetOperatorReservationActive, isLoading: fleetOperatorReservationActiveLoading, queryKey: fleetOperatorReservationActiveQueryKey } = useReadContract({
+        address: fleetOperatorBook,
+        abi: fleetOperatorBookAbi,
+        functionName: "isFleetOperatorReservationActive",
+        args: [address!],
+    })
+    useEffect(() => { 
+        fleetOperatorReservationActiveQueryClient.invalidateQueries({ queryKey: fleetOperatorReservationActiveQueryKey }) 
+    }, [blockNumber, fleetOperatorReservationActiveQueryClient, fleetOperatorReservationActiveQueryKey]) 
+
+
     useEffect(() => {
         console.log(compliant)
 
-        if (compliant) {
+        if (compliant && fleetOperatorReservationActive) {
             //router.replace("/fleet")
         }
-    }, [router, compliant])
+    }, [router, compliant, fleetOperatorReservationActive])
 
 
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
             {
-                operatorLoading || guarantorLoading || compliantLoading
+                operatorLoading || guarantorLoading || compliantLoading || fleetOperatorReservationActiveLoading
                 ? (
                     <div className="flex h-full justify-center items-center text-2xl font-bold">
                         <p>Loading...</p>
@@ -271,11 +283,6 @@ export function Wrapper() {
                                                 </>
                                             )
                                         }
-                                        
-                                        
-                                        
-                                        
-                                        
                                     </div>
                                     
                                 </div>
