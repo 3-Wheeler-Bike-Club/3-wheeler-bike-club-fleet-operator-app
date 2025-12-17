@@ -279,7 +279,7 @@ export function Wrapper() {
                                                     <BanknoteArrowUp className="h-40 w-40 max-md:h-30 max-md:w-30 text-green-500" />
                                                     <p className="text-2xl max-md:text-xl text-center font-bold">Onboarding Complete!</p>
                                                     <p className="text-sm max-md:text-xs text-center text-muted-foreground">{"Both operator and guarantor have been verified. Pay the reservation fee to complete your onboarding."}</p>
-                                                    <MakeReservation />
+                                                    <MakeReservation address={address!} />
                                                 </>
                                             )
                                         }
