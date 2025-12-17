@@ -2,6 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTitle, DrawerDescription, DrawerHeader, DrawerTrigger } from "@/components/ui/drawer";
 import { usePayFleetOperatorReservationFee } from "@/hooks/usePayFleetOperatorReservationFee";
 import { Separator } from "../ui/separator";
+import { useQueryClient } from "@tanstack/react-query";
+import { useBlockNumber, useReadContract } from "wagmi";
+import { erc20Abi, formatUnits } from "viem";
+import { cUSD, fleetOperatorBook } from "@/utils/constants/addresses";
+import { celo } from "viem/chains";
+import { useEffect } from "react";
+import { fleetOperatorBookAbi } from "@/utils/abis/fleetOperatorBook";
 
 
 interface MakeReservationProps {
@@ -13,7 +20,46 @@ export function MakeReservation({ address }: MakeReservationProps) {
     //pay reservation fee
     const { payFleetOperatorReservationFee, loadingPayFleetOperatorReservationFee } = usePayFleetOperatorReservationFee()
 
-    
+    const fleetOperatorReservationFeeQueryClient = useQueryClient()
+    const allowanceCeloDollarQueryClient = useQueryClient()
+    const tokenBalanceQueryClient = useQueryClient()
+    const { data: blockNumber } = useBlockNumber({ watch: true }) 
+
+
+    const { data: fleetOperatorReservationFee, queryKey: fleetOperatorReservationFeeQueryKey } = useReadContract({
+        abi: fleetOperatorBookAbi,
+        address: fleetOperatorBook,
+        functionName: "fleetOperatorReservationFee",
+    })
+    useEffect(() => { 
+        fleetOperatorReservationFeeQueryClient.invalidateQueries({ queryKey: fleetOperatorReservationFeeQueryKey }) 
+    }, [blockNumber, fleetOperatorReservationFeeQueryClient, fleetOperatorReservationFeeQueryKey]) 
+
+
+    const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
+        abi: erc20Abi,
+        address: cUSD,
+        functionName: "allowance",
+        args: [address!, fleetOperatorBook],
+    })
+    useEffect(() => { 
+        allowanceCeloDollarQueryClient.invalidateQueries({ queryKey: allowanceCeloDollarQueryKey }) 
+    }, [blockNumber, allowanceCeloDollarQueryClient, allowanceCeloDollarQueryKey])
+    console.log(allowanceCeloUSD)
+
+    const { data: tokenBalance, queryKey: tokenBalanceQueryKey } = useReadContract({
+        abi: erc20Abi,
+        address: cUSD,
+        functionName: "balanceOf",
+        chainId: celo.id,
+        args: [address!],
+
+    })
+    useEffect(() => { 
+        tokenBalanceQueryClient.invalidateQueries({ queryKey: tokenBalanceQueryKey }) 
+    }, [blockNumber, tokenBalanceQueryClient, tokenBalanceQueryKey]) 
+    console.log(tokenBalance!)
+
     return (
         <Drawer>
             <DrawerTrigger asChild>
@@ -38,13 +84,13 @@ export function MakeReservation({ address }: MakeReservationProps) {
                             {/* Reservation Fee Display */}
                             <div className="flex flex-col items-center">
                                 <span className="text-xs text-muted-foreground mb-1">Reservation Fee</span>
-                                <span className="text-4xl font-bold text-yellow-500">$400.00</span>
+                                <span className="text-4xl font-bold text-yellow-500">${formatUnits(fleetOperatorReservationFee!, 6)}</span>
                             </div>
                             <Separator className="w-full my-4" />
                             {/* User Balance Display */}
                             <div className="flex flex-col items-center">
                                 <span className="text-xs text-muted-foreground mb-1">Your Balance</span>
-                                <span className="text-4xl font-bold text-emerald-500">$0.00</span>
+                                <span className="text-4xl font-bold text-emerald-500">${formatUnits(tokenBalance!, 18)}</span>
                                 {/* Visual indicator if balance is insufficient */}
                                 <div className="w-full mt-4">
                                     {/* This could be dynamic later */}
@@ -59,7 +105,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
                     <Button 
                         className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
                         onClick={() => payFleetOperatorReservationFee?.(address)}
-                        disabled={loadingPayFleetOperatorReservationFee /* || userBalance < 50000 */}
+                        disabled={loadingPayFleetOperatorReservationFee}
                     >
                         {loadingPayFleetOperatorReservationFee ? "Processing..." : "Pay Reservation Fee"}
                     </Button>
