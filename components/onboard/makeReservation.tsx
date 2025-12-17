@@ -26,7 +26,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
     const { data: blockNumber } = useBlockNumber({ watch: true }) 
 
 
-    const { data: fleetOperatorReservationFee, queryKey: fleetOperatorReservationFeeQueryKey } = useReadContract({
+    const { data: fleetOperatorReservationFee, isLoading: fleetOperatorReservationFeeLoading, queryKey: fleetOperatorReservationFeeQueryKey } = useReadContract({
         abi: fleetOperatorBookAbi,
         address: fleetOperatorBook,
         functionName: "fleetOperatorReservationFee",
@@ -47,7 +47,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
     }, [blockNumber, allowanceCeloDollarQueryClient, allowanceCeloDollarQueryKey])
     console.log(allowanceCeloUSD)
 
-    const { data: tokenBalance, queryKey: tokenBalanceQueryKey } = useReadContract({
+    const { data: tokenBalance, isLoading: tokenBalanceLoading, queryKey: tokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
         address: cUSD,
         functionName: "balanceOf",
@@ -77,39 +77,80 @@ export function MakeReservation({ address }: MakeReservationProps) {
                             Pay to reserve a pre-financed 3-Wheeler.
                         </DrawerDescription>
                     </DrawerHeader>
-                    <div className="flex flex-col items-center w-full px-4 py-6 sm:px-8 gap-6">
-                    {/* Unique display: Fee & User Balance */}
-                    <div className="flex flex-col items-center w-full px-4 py-6 sm:px-8">
-                        <div className="flex flex-col items-center gap-8 w-full justify-center mb-4">
-                            {/* Reservation Fee Display */}
-                            <div className="flex flex-col items-center">
-                                <span className="text-xs text-muted-foreground mb-1">Reservation Fee</span>
-                                <span className="text-4xl font-bold text-yellow-500">${formatUnits(fleetOperatorReservationFee!, 6)}</span>
-                            </div>
-                            <Separator className="w-full my-4" />
-                            {/* User Balance Display */}
-                            <div className="flex flex-col items-center">
-                                <span className="text-xs text-muted-foreground mb-1">Your Balance</span>
-                                <span className="text-4xl font-bold text-emerald-500">${formatUnits(tokenBalance!, 18)}</span>
-                                {/* Visual indicator if balance is insufficient */}
-                                <div className="w-full mt-4">
-                                    {/* This could be dynamic later */}
-                                    <span className="block text-center text-sm font-medium text-muted-foreground bg-yellow-50 rounded-lg px-2 py-1">
-                                        You need at least $400.00 to reserve. 
-                                    </span>
+                    {
+                        !fleetOperatorReservationFeeLoading && !tokenBalanceLoading && (
+                            <div className="flex flex-col items-center w-full px-4 py-6 sm:px-8 gap-6">
+                            {/* Unique display: Fee & User Balance */}
+                            <div className="flex flex-col items-center w-full px-4 py-6 sm:px-8">
+                                <div className="flex flex-col items-center gap-8 w-full justify-center mb-4">
+                                    {/* Reservation Fee Display */}
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xs text-muted-foreground mb-1">Reservation Fee</span>
+                                        <span className="text-4xl font-bold text-yellow-500">${formatUnits(fleetOperatorReservationFee!, 6)}</span>
+                                    </div>
+                                    <Separator className="w-full my-4" />
+                                    {/* User Balance Display */}
+                                    <div className="flex flex-col items-center">
+                                        <span className="text-xs text-muted-foreground mb-1">Your Balance</span>
+                                        <span
+                                            className={`
+                                                text-4xl font-bold 
+                                                ${Number(formatUnits(tokenBalance!, 18)) >= Number(formatUnits(fleetOperatorReservationFee!, 6))
+                                                    ? 'text-emerald-500'
+                                                    : 'text-red-500'
+                                                }
+                                            `}
+                                        >
+                                            ${formatUnits(tokenBalance!, 18)}
+                                        </span>
+                                        {/* Visual indicator if balance is insufficient */}
+                                        <div className="w-full mt-4">
+                                            {/* This could be dynamic later */}
+                                            <span
+                                                className={`
+                                                    block text-center font-medium text-muted-foreground rounded-lg px-2 py-1
+                                                    ${
+                                                        Number(formatUnits(fleetOperatorReservationFee!, 6)) > Number(formatUnits(tokenBalance!, 18))
+                                                            ? 'bg-red-100'
+                                                            : 'bg-emerald-100'
+                                                    }
+                                                `}
+                                            >
+                                            {
+                                                formatUnits(fleetOperatorReservationFee!, 6) > formatUnits(tokenBalance!, 18) ? `You need at least $${ Number(formatUnits(fleetOperatorReservationFee!, 6)) - Number(formatUnits(tokenBalance!, 18))} to reserve.` : "You have enough balance to reserve."
+                                            }
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
+                                
                             </div>
-                        </div>
-                        
-                    </div>
-                    <Button 
-                        className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
-                        onClick={() => payFleetOperatorReservationFee?.(address)}
-                        disabled={loadingPayFleetOperatorReservationFee}
-                    >
-                        {loadingPayFleetOperatorReservationFee ? "Processing..." : "Pay Reservation Fee"}
-                    </Button>
-                    </div>  
+
+                            {
+                                formatUnits(fleetOperatorReservationFee!, 6) > formatUnits(tokenBalance!, 18) 
+                                ? (
+                                    <Button 
+                                        className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
+                                    >
+                                        {"Add More Funds"}
+                                    </Button>
+                                )
+                                : (
+                                    <Button 
+                                        className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
+                                        onClick={() => payFleetOperatorReservationFee?.(address)}
+                                        disabled={loadingPayFleetOperatorReservationFee}
+                                    >
+                                        {loadingPayFleetOperatorReservationFee ? "Processing..." : "Pay Reservation Fee"}
+                                    </Button>
+                                )
+                            }
+                            
+                            
+                            </div> 
+                        )
+                    }
+                     
                 </div>
             </DrawerContent>
         </Drawer>
