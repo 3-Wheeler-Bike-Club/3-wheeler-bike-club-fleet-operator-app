@@ -101,7 +101,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
                     </DrawerHeader>
                     {
                         !fleetOperatorReservationFeeLoading && !tokenBalanceLoading && (
-                            <div className="flex flex-col items-center w-full px-4 py-6 sm:px-8 gap-6">
+                            <div className="flex flex-col items-center w-full px-4 py-6 sm:px-8">
                             {/* Unique display: Fee & User Balance */}
                             <div className="flex flex-col items-center w-full px-4 py-6 sm:px-8">
                                 <div className="flex flex-col items-center gap-8 w-full justify-center mb-4">
@@ -193,8 +193,15 @@ export function MakeReservation({ address }: MakeReservationProps) {
                                     </>
                                 )
                             }
-                            
-                            
+                            {
+                                <Button
+                                    className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
+                                    variant="outline"
+                                    onClick={() => setOpenDrawer(false)}
+                                >
+                                    {"Cancel"}
+                                </Button>
+                            }
                             </div> 
                         )
                     }
