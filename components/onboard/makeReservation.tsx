@@ -1,14 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTitle, DrawerDescription, DrawerHeader, DrawerTrigger } from "@/components/ui/drawer";
 import { usePayFleetOperatorReservationFee } from "@/hooks/usePayFleetOperatorReservationFee";
-import { Separator } from "../ui/separator";
+import { Separator } from "@/components/ui/separator";
 import { useQueryClient } from "@tanstack/react-query";
 import { useBlockNumber, useReadContract } from "wagmi";
 import { erc20Abi, formatUnits } from "viem";
 import { cUSD, fleetOperatorBook } from "@/utils/constants/addresses";
 import { celo } from "viem/chains";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fleetOperatorBookAbi } from "@/utils/abis/fleetOperatorBook";
+import { OnRamp } from "@/components/ramp/onRamp";
+import { useApprove } from "@/hooks/useApprove";
+import { BanknoteArrowDown, HandCoins, Loader2, Signature } from "lucide-react";
 
 
 interface MakeReservationProps {
@@ -17,6 +20,13 @@ interface MakeReservationProps {
 
 export function MakeReservation({ address }: MakeReservationProps) {
 
+    const [openOnRamp, setOpenOnRamp] = useState(false)
+    const [reference, setReference] = useState("")
+    const [loadingAddCeloDollar, setLoadingAddCeloDollar] = useState(false)
+    const [openDrawer, setOpenDrawer] = useState(false)
+
+    //approve spending
+    const { approve, loadingApproval } = useApprove()
     //pay reservation fee
     const { payFleetOperatorReservationFee, loadingPayFleetOperatorReservationFee } = usePayFleetOperatorReservationFee()
 
@@ -60,10 +70,22 @@ export function MakeReservation({ address }: MakeReservationProps) {
     }, [blockNumber, tokenBalanceQueryClient, tokenBalanceQueryKey]) 
     console.log(tokenBalance!)
 
+    const onRamp = () => {
+        setLoadingAddCeloDollar(true)
+        setOpenOnRamp(true)
+        const ref = `${address}-${(new Date()).getTime().toString()}`
+        setReference(ref)
+        setOpenDrawer(false)
+    }
+
     return (
-        <Drawer>
+        <>
+        <Drawer open={openDrawer}>
             <DrawerTrigger asChild>
-                <Button className="max-w-fit h-12 rounded-2xl">
+                <Button 
+                    className="max-w-fit h-12 rounded-2xl"
+                    onClick={() => setOpenDrawer(true)}
+                >
                     Make Reservation
                 </Button>
             </DrawerTrigger>
@@ -131,18 +153,44 @@ export function MakeReservation({ address }: MakeReservationProps) {
                                 ? (
                                     <Button 
                                         className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
+                                        onClick={onRamp}
                                     >
+                                        {
+                                            loadingAddCeloDollar ? <Loader2 className="w-4 h-4 animate-spin" />  : <BanknoteArrowDown />
+                                        }
                                         {"Add More Funds"}
                                     </Button>
                                 )
                                 : (
-                                    <Button 
-                                        className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
-                                        onClick={() => payFleetOperatorReservationFee?.(address)}
-                                        disabled={loadingPayFleetOperatorReservationFee}
-                                    >
-                                        {loadingPayFleetOperatorReservationFee ? "Processing..." : "Pay Reservation Fee"}
-                                    </Button>
+                                    <>
+                                    {
+                                        Number(formatUnits(allowanceCeloUSD!, 18)) < Number(formatUnits(fleetOperatorReservationFee!, 6))
+                                        ?(
+                                            <Button 
+                                                className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
+                                                onClick={() => payFleetOperatorReservationFee?.(address)}
+                                                disabled={loadingPayFleetOperatorReservationFee}
+                                            >
+                                                {
+                                                    loadingApproval ? <Loader2 className="w-4 h-4 animate-spin" />  : <Signature />
+                                                }
+                                                {"Approve Spending"}
+                                            </Button>  
+                                        ) 
+                                        :(
+                                            <Button 
+                                                className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
+                                                onClick={() => payFleetOperatorReservationFee?.(address)}
+                                                disabled={loadingPayFleetOperatorReservationFee}
+                                            >
+                                                {
+                                                    loadingPayFleetOperatorReservationFee ? <Loader2 className="w-4 h-4 animate-spin" />  : <HandCoins />
+                                                }
+                                                {"Pay Reservation Fee"}
+                                            </Button>
+                                        )
+                                    }
+                                    </>
                                 )
                             }
                             
@@ -154,5 +202,15 @@ export function MakeReservation({ address }: MakeReservationProps) {
                 </div>
             </DrawerContent>
         </Drawer>
+        {openOnRamp && (
+            <OnRamp
+                setOpenOnRamp={setOpenOnRamp}
+                address={address!}
+                reference={reference}
+                setLoadingAddCeloDollar={setLoadingAddCeloDollar}
+                setOpenDrawer={setOpenDrawer}
+            />
+        )}
+        </>
     )
 }
