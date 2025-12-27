@@ -168,8 +168,8 @@ export function MakeReservation({ address }: MakeReservationProps) {
                                         ?(
                                             <Button 
                                                 className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
-                                                onClick={() => payFleetOperatorReservationFee?.(address)}
-                                                disabled={loadingPayFleetOperatorReservationFee}
+                                                onClick={() => approve(address!, cUSD)}
+                                                disabled={loadingApproval}
                                             >
                                                 {
                                                     loadingApproval ? <Loader2 className="w-4 h-4 animate-spin" />  : <Signature />
