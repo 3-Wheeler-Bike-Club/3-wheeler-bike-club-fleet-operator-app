@@ -155,7 +155,7 @@ export function Wrapper() {
         console.log(compliant)
 
         if (compliant && fleetOperatorReservationActive) {
-            //router.replace("/fleet")
+            router.replace("/fleet")
         }
     }, [router, compliant, fleetOperatorReservationActive])
 
