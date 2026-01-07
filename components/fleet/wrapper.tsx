@@ -11,6 +11,8 @@ import { usePrivy } from "@privy-io/react-auth"
 import { useGetOperator } from "@/hooks/useGetOperator"
 import { Alert, AlertTitle, AlertDescription } from "../ui/alert"
 import { DoorOpen } from "lucide-react"
+import { Garage } from "./garage"
+import { Reservation } from "./reservation"
 
 
 export function Wrapper() {
@@ -68,11 +70,18 @@ export function Wrapper() {
                                     <DoorOpen className="h-4 w-4" />
                                     <AlertTitle className="font-bold">Welcome, {operator?.lastname}</AlertTitle>
                                     <AlertDescription className="text-xs italic">
-                                        <p className="max-md:text-[11px]">{"You can now operate your own 3-wheeler"}</p>
+                                        <p className="max-md:text-[11px]">{"Manage 3-wheeler operations & reservations"}</p>
                                     </AlertDescription>
                                 </Alert>
                             </div>
 
+                            
+                            <div className="flex w-full justify-center">
+                                <div className="w-full max-w-[66rem] flex flex-col gap-4">
+                                    <Reservation/>
+                                    <Garage/>
+                                </div>
+                            </div>
                         </div>
                     </>
                 )
