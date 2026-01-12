@@ -78,7 +78,7 @@ export function Wrapper() {
                             
                             <div className="flex w-full justify-center">
                                 <div className="w-full max-w-[66rem] flex flex-col gap-4">
-                                    <Reservation/>
+                                    <Reservation address={address}/>
                                     <Garage/>
                                 </div>
                             </div>

@@ -124,7 +124,7 @@ export function Wrapper() {
 
 
     const compliantQueryClient = useQueryClient()
-    const fleetOperatorReservationActiveQueryClient = useQueryClient()
+    const fleetOperatorReservationNumberQueryClient = useQueryClient()
     
     const { data: blockNumber } = useBlockNumber({ watch: true })  
 
@@ -140,31 +140,31 @@ export function Wrapper() {
     }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
 
 
-    const { data: fleetOperatorReservationActive, isLoading: fleetOperatorReservationActiveLoading, queryKey: fleetOperatorReservationActiveQueryKey } = useReadContract({
+    const { data: fleetOperatorReservationNumber, isLoading: fleetOperatorReservationNumberLoading, queryKey: fleetOperatorReservationNumberQueryKey } = useReadContract({
         address: fleetOperatorBook,
         abi: fleetOperatorBookAbi,
-        functionName: "isFleetOperatorReservationActive",
+        functionName: "fleetOperatorReservationNumber",
         args: [address!],
     })
     useEffect(() => { 
-        fleetOperatorReservationActiveQueryClient.invalidateQueries({ queryKey: fleetOperatorReservationActiveQueryKey }) 
-    }, [blockNumber, fleetOperatorReservationActiveQueryClient, fleetOperatorReservationActiveQueryKey]) 
+        fleetOperatorReservationNumberQueryClient.invalidateQueries({ queryKey: fleetOperatorReservationNumberQueryKey }) 
+    }, [blockNumber, fleetOperatorReservationNumberQueryClient, fleetOperatorReservationNumberQueryKey]) 
 
 
     useEffect(() => {
         console.log(compliant)
 
-        if (compliant && fleetOperatorReservationActive) {
+        if (compliant && (fleetOperatorReservationNumber && fleetOperatorReservationNumber > 0)) {
             router.replace("/fleet")
         }
-    }, [router, compliant, fleetOperatorReservationActive])
+    }, [router, compliant, fleetOperatorReservationNumber])
 
 
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
             {
-                operatorLoading || guarantorLoading || compliantLoading || fleetOperatorReservationActiveLoading
+                operatorLoading || guarantorLoading || compliantLoading || fleetOperatorReservationNumberLoading
                 ? (
                     <div className="flex h-full justify-center items-center text-2xl font-bold">
                         <p>Loading...</p>

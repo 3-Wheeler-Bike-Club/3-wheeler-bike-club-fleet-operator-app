@@ -184,6 +184,11 @@ export const fleetOperatorBookAbi = [
     "inputs": []
   },
   {
+    "name": "ReservationNotTransferable",
+    "type": "error",
+    "inputs": []
+  },
+  {
     "name": "SafeERC20FailedOperation",
     "type": "error",
     "inputs": [
@@ -526,6 +531,25 @@ export const fleetOperatorBookAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "fleetOperatorReservationNumber",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "fleetOperatorReservationToServe",
     "type": "function",
     "inputs": [],
@@ -700,25 +724,6 @@ export const fleetOperatorBookAbi = [
     "inputs": [
       {
         "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "isFleetOperatorReservationActive",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "",
         "type": "address",
         "internalType": "address"
       }
