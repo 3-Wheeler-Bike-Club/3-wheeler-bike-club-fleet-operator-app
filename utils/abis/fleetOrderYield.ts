@@ -71,11 +71,6 @@ export const fleetOrderYieldAbi = [
     "inputs": []
   },
   {
-    "name": "NoNativeTokenAccepted",
-    "type": "error",
-    "inputs": []
-  },
-  {
     "name": "NotEnoughTokens",
     "type": "error",
     "inputs": []
@@ -335,10 +330,6 @@ export const fleetOrderYieldAbi = [
       }
     ],
     "anonymous": false
-  },
-  {
-    "type": "fallback",
-    "stateMutability": "payable"
   },
   {
     "name": "COMPLIANCE_ROLE",
@@ -678,6 +669,25 @@ export const fleetOrderYieldAbi = [
     "stateMutability": "view"
   },
   {
+    "name": "isFleetOperatorAvailable",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "operator",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
     "name": "isSuperAdmin",
     "type": "function",
     "inputs": [
@@ -963,9 +973,5 @@ export const fleetOrderYieldAbi = [
       }
     ],
     "stateMutability": "view"
-  },
-  {
-    "type": "receive",
-    "stateMutability": "payable"
   }
 ] as const;

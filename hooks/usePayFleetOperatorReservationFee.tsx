@@ -2,7 +2,7 @@ import { fleetOperatorBookAbi } from "@/utils/abis/fleetOperatorBook"
 import { publicClient } from "@/utils/client"
 import { fleetOperatorBook } from "@/utils/constants/addresses"
 import { getReferralTag, submitReferral } from "@divvi/referral-sdk"
-//import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
 import { encodeFunctionData } from "viem"
@@ -17,7 +17,7 @@ export const usePayFleetOperatorReservationFee = () => {
     const { chainId } = useAccount()
     const { switchChainAsync } = useSwitchChain()
 
-    //const router = useRouter()
+    const router = useRouter()
 
     async function payFleetOperatorReservationFee(account: `0x${string}`) {
       try {
@@ -66,7 +66,7 @@ export const usePayFleetOperatorReservationFee = () => {
         toast.success("Reservation fee paid successfully", {
           description: `You have now reserved a 3-Wheeler`,
         })
-        //router.push("/fleet")
+        router.push("/fleet")
       } catch (error) {
         console.log(error)
         setLoadingPayFleetOperatorReservationFee(false)
