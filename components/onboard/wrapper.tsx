@@ -16,7 +16,7 @@ import { VerifyOperatorContact } from "@/components/onboard/verifyOperatorContac
 import { VerifyGuarantorKYC } from "@/components/onboard/verifyGuarantorKYC"
 import { VerifyGuarantorContact } from "@/components/onboard/verifyGuarantorContact"
 import { usePrivy } from "@privy-io/react-auth"
-import { MakeReservation } from "./makeReservation"
+import { MakeReservation } from "../reserve/makeReservation"
 
 
 export function Wrapper() { 

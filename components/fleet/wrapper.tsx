@@ -1,18 +1,15 @@
 "use client"
 
 import { useBlockNumber, useReadContract } from "wagmi"
-import { fleetOperatorBook } from "@/utils/constants/addresses"
+import { fleetOperatorBook, fleetOrderYield } from "@/utils/constants/addresses"
 import { fleetOperatorBookAbi } from "@/utils/abis/fleetOperatorBook"
 import { useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
 import { Menu } from "@/components/top/menu"
 import { useRouter } from "next/navigation"
 import { usePrivy } from "@privy-io/react-auth"
-import { useGetOperator } from "@/hooks/useGetOperator"
-import { Alert, AlertTitle, AlertDescription } from "../ui/alert"
-import { DoorOpen } from "lucide-react"
-import { Garage } from "./garage"
-import { Reservation } from "./reservation"
+import { Garage } from "@/components/fleet/garage"
+import { fleetOrderYieldAbi } from "@/utils/abis/fleetOrderYield"
 
 
 export function Wrapper() {
@@ -22,12 +19,13 @@ export function Wrapper() {
     console.log(user?.wallet?.address)
     const address = user?.wallet?.address as `0x${string}`
     
-    const { operator, loading, getOperatorSync } = useGetOperator(address!)
-    console.log(operator);
+
     const router = useRouter()  
 
 
     const compliantQueryClient = useQueryClient()
+    const fleetOperatorReservationNumberQueryClient = useQueryClient()
+    const fleetOperatedQueryClient = useQueryClient()
     
     const { data: blockNumber } = useBlockNumber({ watch: true })  
 
@@ -40,22 +38,51 @@ export function Wrapper() {
     useEffect(() => { 
         compliantQueryClient.invalidateQueries({ queryKey: compliantQueryKey }) 
     }, [blockNumber, compliantQueryClient, compliantQueryKey]) 
+    console.log(compliant)
+
+    //operator reservation number 
+    const { data: fleetOperatorReservationNumber, isLoading: fleetOperatorReservationNumberLoading, queryKey: fleetOperatorReservationNumberQueryKey } = useReadContract({
+        address: fleetOperatorBook,
+        abi: fleetOperatorBookAbi,
+        functionName: "fleetOperatorReservationNumber",
+        args: [address!],
+    })
+    useEffect(() => { 
+        fleetOperatorReservationNumberQueryClient.invalidateQueries({ queryKey: fleetOperatorReservationNumberQueryKey }) 
+    }, [blockNumber, fleetOperatorReservationNumberQueryClient, fleetOperatorReservationNumberQueryKey]) 
+    console.log(Number(fleetOperatorReservationNumber))
+
+
+    //operator reservation number 
+    const { data: fleetOperated, isLoading: fleetOperatedLoading, queryKey: fleetOperatedQueryKey } = useReadContract({
+        address: fleetOrderYield,
+        abi: fleetOrderYieldAbi,
+        functionName: "getFleetOperated",
+        args: [address!],
+    })
+    useEffect(() => { 
+        fleetOperatedQueryClient.invalidateQueries({ queryKey: fleetOperatedQueryKey }) 
+    }, [blockNumber, fleetOperatedQueryClient, fleetOperatedQueryKey]) 
+    console.log(fleetOperated)
+
+
+
 
 
 
     useEffect(() => {
-        console.log(compliant)
-
-        if (compliant === false) {
+        if (compliant == false && Number(fleetOperatorReservationNumber)! === 0 || ( fleetOperated && fleetOperated.length >= 1)) {
             router.replace("/onboard")
         }
-    }, [router, compliant])
+    }, [router, compliant, fleetOperatorReservationNumber])
+
+   
 
     return (
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
             {
-                loading || compliantLoading
+                compliantLoading || fleetOperatorReservationNumberLoading || fleetOperatedLoading 
                 ? (
                     <div className="flex h-full justify-center items-center text-2xl font-bold">
                         <p>Loading...</p>
@@ -63,26 +90,12 @@ export function Wrapper() {
                 ) 
                 : (
                     <>
-                        <div className="flex flex-col h-full w-full">
-
-                            <div className="flex w-full justify-center">
-                                <Alert className="w-full max-w-[66rem]">
-                                    <DoorOpen className="h-4 w-4" />
-                                    <AlertTitle className="font-bold">Welcome, {operator?.lastname}</AlertTitle>
-                                    <AlertDescription className="text-xs italic">
-                                        <p className="max-md:text-[11px]">{"Manage 3-wheeler operations & reservations"}</p>
-                                    </AlertDescription>
-                                </Alert>
-                            </div>
-
-                            
-                            <div className="flex w-full justify-center">
-                                <div className="w-full max-w-[66rem] flex flex-col gap-4">
-                                    <Reservation address={address}/>
-                                    <Garage/>
-                                </div>
-                            </div>
-                        </div>
+                        {
+                            compliant 
+                            && (
+                                <Garage address={address!} fleetOperatorReservationNumber={fleetOperatorReservationNumber!} fleetOperated={fleetOperated!} />
+                            )
+                        }
                     </>
                 )
             }    

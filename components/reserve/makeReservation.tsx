@@ -139,7 +139,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
                                                 `}
                                             >
                                             {
-                                                formatUnits(fleetOperatorReservationFee!, 6) > formatUnits(tokenBalance!, 18) ? `You need at least $${ Number(formatUnits(fleetOperatorReservationFee!, 6)) - Number(formatUnits(tokenBalance!, 18))} to reserve.` : "You have enough balance to reserve."
+                                                Number(formatUnits(fleetOperatorReservationFee!, 6)) > Number(formatUnits(tokenBalance!, 18)) ? `You need at least $${ Number(formatUnits(fleetOperatorReservationFee!, 6)) - Number(formatUnits(tokenBalance!, 18))} to reserve.` : "You have enough balance to reserve."
                                             }
                                             </span>
                                         </div>
@@ -149,7 +149,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
                             </div>
 
                             {
-                                formatUnits(fleetOperatorReservationFee!, 6) > formatUnits(tokenBalance!, 18) 
+                                Number(formatUnits(fleetOperatorReservationFee!, 6)) > Number(formatUnits(tokenBalance!, 18)) 
                                 ? (
                                     <Button 
                                         className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
