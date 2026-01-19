@@ -1,6 +1,7 @@
 import { Alert, AlertTitle, AlertDescription } from "../ui/alert"
-import { CreditCard, DoorOpen, Key, Ticket, UsersRound, Warehouse } from "lucide-react"
+import { CreditCard, DoorOpen, Key, Ticket, UsersRound, Warehouse, Clock, TrendingUp } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGetOperator } from "@/hooks/useGetOperator";
 import { useBlockNumber, useReadContract } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
@@ -108,7 +109,7 @@ console.log(fleetLockPeriod)
                 <div className="flex w-full max-w-[66rem] gap-4">
                     <div className="flex w-full gap-2 justify-between">
                         <div/>
-                        <div className="flex gap-2">
+                        <div className="flex w-full gap-2">
                             {
                                 Number(fleetOperatorReservationNumber) === 0 && (
                                     <>
@@ -141,22 +142,106 @@ console.log(fleetLockPeriod)
                                 Number(fleetOperatorReservationNumber) > 0 && (
                                     <>
                                         {/* show reservation / waitlist details */}
-                                        <div className="flex w-full flex-col gap-2 mt-2">
-                                            <div className="flex justify-between text-[0.7rem] text-[9px] text-muted-foreground">
-                                                <span className="flex items-center gap-1"><><Ticket className="h-3 w-3 text-primary"/></>{"Ticket No.: " + Number(fleetOperatorReservationNumber)}</span>
-                                                <span className="flex items-center gap-1">
-                                                    <><UsersRound className="h-3 w-3 text-primary" /></>
-                                                    {"drivers waiting: " + Math.max(0, Number(fleetOperatorReservationNumber) - Number(fleetOperatorReservationToServe))}
-                                                </span>
-                                                <span className="flex items-center gap-1">
-                                                    <>
-                                                    <UsersRound className="h-3 w-3 text-primary" />
-                                                    { ( (Number(totalFleetOperators) + 1) ) }  
-                                                    / {/**- ((Number(fleetOperatorReservationToServe) + 1) - Number(fleetOperatorReservationNumber)  */}
-                                                    {(Number(totalFleetOperators) + 1) - Number(fleetOperatorReservationToServe)}
-                                                    </>
-                                                </span>
-                                            </div>
+                                        <div className="w-full flex justify-center ">
+                                            <Card className="w-full border-2 border-primary/20 shadow-lg">
+                                                <CardHeader className="pb-4">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="p-2 rounded-lg bg-primary/10">
+                                                                <Ticket className="h-6 w-6 text-primary" />
+                                                            </div>
+                                                            <div>
+                                                                <CardTitle className="text-xl">Reservation Ticket</CardTitle>
+                                                                <CardDescription className="text-base font-semibold text-primary mt-1">
+                                                                    #{Number(fleetOperatorReservationNumber)}
+                                                                </CardDescription>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-yellow-100 text-yellow-700 text-sm font-medium">
+                                                            <Clock className="h-4 w-4" />
+                                                            <span>In Queue</span>
+                                                        </div>
+                                                    </div>
+                                                </CardHeader>
+                                                <CardContent className="space-y-6">
+                                                    {/* Progress Section */}
+                                                    <div className="space-y-3">
+                                                        <div className="flex items-center justify-between text-sm">
+                                                            <span className="text-muted-foreground font-medium">Waitlist Progress</span>
+                                                            <span className="font-semibold text-primary">
+                                                                {totalFleetOperators && fleetOperatorReservationToServe !== undefined 
+                                                                    ? Math.round(
+                                                                        ((Number(totalFleetOperators) + 1 - Number(fleetOperatorReservationToServe)) / 
+                                                                        (Number(totalFleetOperators) + 1)) * 100
+                                                                    )
+                                                                    : 0
+                                                                }%
+                                                            </span>
+                                                        </div>
+                                                        <Progress 
+                                                            value={totalFleetOperators && fleetOperatorReservationToServe !== undefined
+                                                                ? ((Number(totalFleetOperators) + 1 - Number(fleetOperatorReservationToServe)) / 
+                                                                   (Number(totalFleetOperators) + 1)) * 100
+                                                                : 0
+                                                            }
+                                                            className="h-3"
+                                                        />
+                                                    </div>
+
+                                                    {/* Stats Grid */}
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <TrendingUp className="h-4 w-4 text-primary" />
+                                                                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                                                    Your Position
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-baseline gap-2">
+                                                                <span className="text-3xl font-bold text-primary">
+                                                                    {totalFleetOperators && fleetOperatorReservationToServe !== undefined
+                                                                        ? ((Number(totalFleetOperators) + 1) - Number(fleetOperatorReservationToServe))
+                                                                        : '-'
+                                                                    }
+                                                                </span>
+                                                                <span className="text-sm text-muted-foreground">
+                                                                    / {totalFleetOperators ? Number(totalFleetOperators) + 1 : '-'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="p-4 rounded-lg bg-yellow-50 border border-yellow-200">
+                                                            <div className="flex items-center gap-2 mb-2">
+                                                                <UsersRound className="h-4 w-4 text-yellow-600" />
+                                                                <span className="text-xs font-medium text-yellow-700 uppercase tracking-wide">
+                                                                    Ahead of You
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-baseline gap-2">
+                                                                <span className="text-3xl font-bold text-yellow-600">
+                                                                    {fleetOperatorReservationToServe !== undefined
+                                                                        ? Math.max(0, Number(fleetOperatorReservationNumber) - Number(fleetOperatorReservationToServe))
+                                                                        : '-'
+                                                                    }
+                                                                </span>
+                                                                <span className="text-sm text-yellow-600/70">
+                                                                    {fleetOperatorReservationToServe !== undefined && 
+                                                                     Math.max(0, Number(fleetOperatorReservationNumber) - Number(fleetOperatorReservationToServe)) === 1
+                                                                        ? 'person'
+                                                                        : 'people'
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Info Message */}
+                                                    <div className="pt-2 pb-1">
+                                                        <p className="text-sm text-center text-muted-foreground italic">
+                                                            You're in the queue! We'll notify you as soon as your 3-wheeler reservation is ready.
+                                                        </p>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
                                         </div>
                                     </>
                                 )
