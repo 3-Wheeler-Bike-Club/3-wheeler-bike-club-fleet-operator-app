@@ -108,7 +108,7 @@ console.log(fleetLockPeriod)
             <div className="flex w-full items-center justify-center">
                 <div className="flex w-full max-w-[66rem] gap-4">
                     <div className="flex w-full gap-2 justify-between">
-                        <div/>
+                        
                         <div className="flex w-full gap-2">
                             {
                                 Number(fleetOperatorReservationNumber) === 0 && (
@@ -142,19 +142,21 @@ console.log(fleetLockPeriod)
                                 Number(fleetOperatorReservationNumber) > 0 && (
                                     <>
                                         {/* show reservation / waitlist details */}
-                                        <div className="w-full flex justify-center ">
-                                            <Card className="w-full border-2 border-primary/20 shadow-lg">
-                                                <CardHeader className="pb-4">
+                                        <div className="w-full flex">
+                                            <Card className="w-full border-primary/20 shadow-lg">
+                                                <CardHeader>
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-3">
                                                             <div className="p-2 rounded-lg bg-primary/10">
                                                                 <Ticket className="h-6 w-6 text-primary" />
                                                             </div>
                                                             <div>
-                                                                <CardTitle className="text-xl">Reservation Ticket</CardTitle>
-                                                                <CardDescription className="text-base font-semibold text-primary mt-1">
-                                                                    #{Number(fleetOperatorReservationNumber)}
-                                                                </CardDescription>
+                                                                <CardTitle className="text-xl flex items-center gap-2">
+                                                                    {"RSVP "}
+                                                                    <span className="font-bold text-primary text-3xl">
+                                                                        #{Number(fleetOperatorReservationNumber)}
+                                                                    </span>
+                                                                </CardTitle>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-yellow-100 text-yellow-700 text-sm font-medium">
@@ -164,30 +166,6 @@ console.log(fleetLockPeriod)
                                                     </div>
                                                 </CardHeader>
                                                 <CardContent className="space-y-6">
-                                                    {/* Progress Section */}
-                                                    <div className="space-y-3">
-                                                        <div className="flex items-center justify-between text-sm">
-                                                            <span className="text-muted-foreground font-medium">Waitlist Progress</span>
-                                                            <span className="font-semibold text-primary">
-                                                                {totalFleetOperators && fleetOperatorReservationToServe !== undefined 
-                                                                    ? Math.round(
-                                                                        ((Number(totalFleetOperators) + 1 - Number(fleetOperatorReservationToServe)) / 
-                                                                        (Number(totalFleetOperators) + 1)) * 100
-                                                                    )
-                                                                    : 0
-                                                                }%
-                                                            </span>
-                                                        </div>
-                                                        <Progress 
-                                                            value={totalFleetOperators && fleetOperatorReservationToServe !== undefined
-                                                                ? ((Number(totalFleetOperators) + 1 - Number(fleetOperatorReservationToServe)) / 
-                                                                   (Number(totalFleetOperators) + 1)) * 100
-                                                                : 0
-                                                            }
-                                                            className="h-3"
-                                                        />
-                                                    </div>
-
                                                     {/* Stats Grid */}
                                                     <div className="grid grid-cols-2 gap-4">
                                                         <div className="p-4 rounded-lg bg-primary/5 border border-primary/10">
@@ -232,13 +210,6 @@ console.log(fleetLockPeriod)
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                    </div>
-
-                                                    {/* Info Message */}
-                                                    <div className="pt-2 pb-1">
-                                                        <p className="text-sm text-center text-muted-foreground italic">
-                                                            You're in the queue! We'll notify you as soon as your 3-wheeler reservation is ready.
-                                                        </p>
                                                     </div>
                                                 </CardContent>
                                             </Card>
