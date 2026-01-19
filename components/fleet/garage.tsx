@@ -1,15 +1,18 @@
 import { Alert, AlertTitle, AlertDescription } from "../ui/alert"
-import { Clock1, CreditCard, DoorOpen, Ticket, UsersRound, Warehouse } from "lucide-react"
+import { CreditCard, DoorOpen, Key, Ticket, UsersRound, Warehouse } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
 import { useGetOperator } from "@/hooks/useGetOperator";
 import { useBlockNumber, useReadContract } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
-import { fleetOperatorBook } from "@/utils/constants/addresses";
+import { fleetOperatorBook, fleetOrderBook, fleetOrderYield } from "@/utils/constants/addresses";
 import { useEffect, useState } from "react";
 import { fleetOperatorBookAbi } from "@/utils/abis/fleetOperatorBook";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { Carousel, CarouselApi, CarouselContent, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { fleetOrderYieldAbi } from "@/utils/abis/fleetOrderYield";
+import { fleetOrderBookAbi } from "@/utils/abis/fleetOrderBook";
+import { MakeReservation } from "../reserve/makeReservation";
 //import { Id } from "@/components/fleet/id";
 
 
@@ -32,7 +35,9 @@ export function Garage({ address, fleetOperatorReservationNumber, fleetOperated 
 
     const totalFleetOperatorsQueryClient = useQueryClient()
     const fleetOperatorReservationToServeQueryClient = useQueryClient()
-    
+    const fleetPaymentsDistributedQueryClient = useQueryClient()
+    const fleetLockPeriodQueryClient = useQueryClient()
+
     const { data: blockNumber } = useBlockNumber({ watch: true })
 
     // reservation nft from wallet
@@ -46,7 +51,7 @@ export function Garage({ address, fleetOperatorReservationNumber, fleetOperated 
     useEffect(() => { 
         totalFleetOperatorsQueryClient.invalidateQueries({ queryKey: totalFleetOperatorsQueryKey }) 
     }, [blockNumber, totalFleetOperatorsQueryClient, totalFleetOperatorsQueryKey]) 
-
+    console.log(totalFleetOperators)
  
     /* total supply */
 
@@ -60,6 +65,31 @@ export function Garage({ address, fleetOperatorReservationNumber, fleetOperated 
     useEffect(() => { 
         fleetOperatorReservationToServeQueryClient.invalidateQueries({ queryKey: fleetOperatorReservationToServeQueryKey }) 
     }, [blockNumber, fleetOperatorReservationToServeQueryClient, fleetOperatorReservationToServeQueryKey]) 
+    console.log(fleetOperatorReservationToServe)
+    
+
+    const { data: fleetPaymentsDistributed, isLoading: fleetPaymentsDistributedLoading, queryKey: fleetPaymentsDistributedQueryKey } = useReadContract({
+        address: fleetOrderYield,
+        abi: fleetOrderYieldAbi,
+        functionName: "getFleetPaymentsDistributed",
+        args: [fleetOperated[fleetOperated.length - 1]]
+    })
+    useEffect(() => { 
+        fleetPaymentsDistributedQueryClient.invalidateQueries({ queryKey: fleetPaymentsDistributedQueryKey }) 
+    }, [blockNumber, fleetPaymentsDistributedQueryClient, fleetPaymentsDistributedQueryKey]) 
+    console.log(fleetPaymentsDistributed)
+
+
+    const { data: fleetLockPeriod, queryKey: fleetLockPeriodQueryKey } = useReadContract({
+        address: fleetOrderBook,
+        abi: fleetOrderBookAbi,
+        functionName: "getFleetLockPeriodPerOrder",
+        args: [fleetOperated[fleetOperated.length - 1]],
+    })
+    useEffect(() => { 
+        fleetLockPeriodQueryClient.invalidateQueries({ queryKey: fleetLockPeriodQueryKey }) 
+    }, [blockNumber, fleetLockPeriodQueryClient, fleetLockPeriodQueryKey]) 
+console.log(fleetLockPeriod)
 
     return (
         <div className="flex flex-col h-full w-full gap-4">
@@ -69,23 +99,6 @@ export function Garage({ address, fleetOperatorReservationNumber, fleetOperated 
                     <AlertTitle className="font-bold">Welcome, {operator?.lastname}</AlertTitle>
                     <AlertDescription className="text-xs italic">
                         <p className="max-md:text-[11px]">{"Manage 3-wheeler operations & reservations"}</p>
-                        <div className="flex w-full flex-col gap-2 mt-2">
-                            <Progress value={
-                                ( 
-                                    ( (Number(totalFleetOperators) + 1) - Number(fleetOperatorReservationToServe)) - ((Number(fleetOperatorReservationToServe) + 1) - Number(fleetOperatorReservationNumber) ) 
-                                    /
-                                    (Number(totalFleetOperators) + 1) - Number(fleetOperatorReservationToServe)
-                                )
-                                * 100
-                            } className="w-full h-2" />
-                            <div className="flex justify-between text-[0.7rem] text-[9px] text-muted-foreground">
-                                <span className="flex items-center gap-1"><><Ticket className="h-3 w-3 text-primary"/></>{"Ticket No.: " + Number(fleetOperatorReservationNumber)}</span>
-                                <span className="flex items-center gap-1">
-                                    <><UsersRound className="h-3 w-3 text-primary" /></>
-                                    {"drivers ahead in line: " + Math.max(0, Number(fleetOperatorReservationNumber) - Number(fleetOperatorReservationToServe))}
-                                </span>
-                            </div>
-                        </div>
                     </AlertDescription>
                 </Alert>
             </div>
@@ -96,14 +109,59 @@ export function Garage({ address, fleetOperatorReservationNumber, fleetOperated 
                     <div className="flex w-full gap-2 justify-between">
                         <div/>
                         <div className="flex gap-2">
-                            <Button 
-                                //disabled={!ready || !authenticated}
-                                className="max-w-fit h-12 rounded-xl"
-                                onClick={() => router.push(`/fleet/buy`)}
-                            >
-                                <CreditCard />
-                                <p>Pay Weekly Fee</p>
-                            </Button>
+                            {
+                                Number(fleetOperatorReservationNumber) === 0 && (
+                                    <>
+                                    {
+                                        (fleetPaymentsDistributed && fleetLockPeriod ) && (fleetPaymentsDistributed < fleetLockPeriod) 
+                                        ? (
+                                            <>
+                                                {/* Pay Weekly Fee */}
+                                                <Button 
+                                                    //disabled={!ready || !authenticated}
+                                                    className="max-w-fit h-12 rounded-xl"
+                                                    onClick={() => router.push(`/fleet/buy`)}
+                                                >
+                                                    <CreditCard />
+                                                    <p>Pay Weekly Fee</p>
+                                                </Button>
+                                            </>
+                                        )
+                                        : (
+                                            <>
+                                                {/* Book Another 3-Wheeler Reservation */}
+                                                <MakeReservation address={address!} />
+                                            </>
+                                        )
+                                    }
+                                    </>
+                                )
+                            }
+                            {
+                                Number(fleetOperatorReservationNumber) > 0 && (
+                                    <>
+                                        {/* show reservation / waitlist details */}
+                                        <div className="flex w-full flex-col gap-2 mt-2">
+                                            <div className="flex justify-between text-[0.7rem] text-[9px] text-muted-foreground">
+                                                <span className="flex items-center gap-1"><><Ticket className="h-3 w-3 text-primary"/></>{"Ticket No.: " + Number(fleetOperatorReservationNumber)}</span>
+                                                <span className="flex items-center gap-1">
+                                                    <><UsersRound className="h-3 w-3 text-primary" /></>
+                                                    {"drivers waiting: " + Math.max(0, Number(fleetOperatorReservationNumber) - Number(fleetOperatorReservationToServe))}
+                                                </span>
+                                                <span className="flex items-center gap-1">
+                                                    <>
+                                                    <UsersRound className="h-3 w-3 text-primary" />
+                                                    { ( (Number(totalFleetOperators) + 1) ) }  
+                                                    / {/**- ((Number(fleetOperatorReservationToServe) + 1) - Number(fleetOperatorReservationNumber)  */}
+                                                    {(Number(totalFleetOperators) + 1) - Number(fleetOperatorReservationToServe)}
+                                                    </>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </>
+                                )
+                            }
+                            
                             {
                                 fleetOperated && fleetOperated.length >= 1 && (
                                     <div className="flex gap-2">
@@ -130,7 +188,7 @@ export function Garage({ address, fleetOperatorReservationNumber, fleetOperated 
                 {fleetOperated && fleetOperated.length < 1 && (
                     <div className="flex w-full h-full max-w-[66rem] gap-4">
                         <div className="flex flex-col w-full h-full items-center pt-36 max-md:pt-18 gap-4">
-                            <Clock1 className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
+                            <Key className="h-40 w-40 max-md:h-30 max-md:w-30 text-yellow-500" />
                             <p className="text-2xl max-md:text-xl text-center font-bold">Your fleet is empty.</p>
                             <p className="text-sm max-md:text-xs text-center text-muted-foreground">Please wait for your ticket to be processed we will assign you a 3-wheeler shortly.</p>
                         </div>

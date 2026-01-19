@@ -71,12 +71,17 @@ export const fleetOrderYieldAbi = [
     "inputs": []
   },
   {
+    "name": "NoNativeTokenAccepted",
+    "type": "error",
+    "inputs": []
+  },
+  {
     "name": "NotEnoughTokens",
     "type": "error",
     "inputs": []
   },
   {
-    "name": "OperatorNotAssigned",
+    "name": "OperatorAlreadyAssigned",
     "type": "error",
     "inputs": []
   },
@@ -126,25 +131,6 @@ export const fleetOrderYieldAbi = [
         "name": "amount",
         "type": "uint256",
         "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "name": "FleetOperatorAssigned",
-    "type": "event",
-    "inputs": [
-      {
-        "name": "operator",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "id",
-        "type": "uint256",
-        "indexed": true,
         "internalType": "uint256"
       }
     ],
@@ -332,6 +318,10 @@ export const fleetOrderYieldAbi = [
     "anonymous": false
   },
   {
+    "type": "fallback",
+    "stateMutability": "payable"
+  },
+  {
     "name": "COMPLIANCE_ROLE",
     "type": "function",
     "inputs": [],
@@ -391,6 +381,11 @@ export const fleetOrderYieldAbi = [
         "name": "id",
         "type": "uint256",
         "internalType": "uint256"
+      },
+      {
+        "name": "operator",
+        "type": "address",
+        "internalType": "address"
       }
     ],
     "outputs": [],
@@ -405,19 +400,6 @@ export const fleetOrderYieldAbi = [
         "name": "",
         "type": "address",
         "internalType": "address"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "fleetOperatorBookContract",
-    "type": "function",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "contract IFleetOperatorBook"
       }
     ],
     "stateMutability": "view"
@@ -488,6 +470,25 @@ export const fleetOrderYieldAbi = [
         "name": "",
         "type": "address[]",
         "internalType": "address[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "name": "getFleetOrderStatus",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "id",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -655,25 +656,6 @@ export const fleetOrderYieldAbi = [
     "inputs": [
       {
         "name": "account",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool",
-        "internalType": "bool"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "name": "isFleetOperatorAvailable",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "operator",
         "type": "address",
         "internalType": "address"
       }
@@ -868,19 +850,6 @@ export const fleetOrderYieldAbi = [
     "stateMutability": "nonpayable"
   },
   {
-    "name": "setFleetOperatorBookContract",
-    "type": "function",
-    "inputs": [
-      {
-        "name": "_fleetOperatorBookContract",
-        "type": "address",
-        "internalType": "address"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
     "name": "setFleetOrderBookContract",
     "type": "function",
     "inputs": [
@@ -973,5 +942,9 @@ export const fleetOrderYieldAbi = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "receive",
+    "stateMutability": "payable"
   }
 ] as const;
