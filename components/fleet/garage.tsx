@@ -90,7 +90,13 @@ export function Garage({ address, fleetOperatorReservationNumber, fleetOperated 
     useEffect(() => { 
         fleetLockPeriodQueryClient.invalidateQueries({ queryKey: fleetLockPeriodQueryKey }) 
     }, [blockNumber, fleetLockPeriodQueryClient, fleetLockPeriodQueryKey]) 
-console.log(fleetLockPeriod)
+    console.log(fleetLockPeriod)
+
+    const waitlist = Array.from(
+        { length: Number(totalFleetOperators) - Number(fleetOperatorReservationToServe) + 1 },
+        (_, i) => Number(fleetOperatorReservationToServe) + i
+    );
+    //console.log(waitlist)
 
     return (
         <div className="flex flex-col h-full w-full gap-4">
@@ -178,12 +184,12 @@ console.log(fleetLockPeriod)
                                                             <div className="flex items-baseline gap-2">
                                                                 <span className="text-3xl font-bold text-primary">
                                                                     {totalFleetOperators && fleetOperatorReservationToServe !== undefined
-                                                                        ? ((Number(totalFleetOperators) + 1) - Number(fleetOperatorReservationToServe))
+                                                                        ? (waitlist.indexOf(Number(fleetOperatorReservationNumber)) + 1)
                                                                         : '-'
                                                                     }
                                                                 </span>
                                                                 <span className="text-sm text-muted-foreground">
-                                                                    / {totalFleetOperators ? Number(totalFleetOperators) + 1 : '-'}
+                                                                    / {waitlist.length ? waitlist.length : '-'}
                                                                 </span>
                                                             </div>
                                                         </div>
