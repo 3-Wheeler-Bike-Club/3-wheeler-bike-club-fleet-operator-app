@@ -5,8 +5,8 @@ import { Separator } from "@/components/ui/separator";
 import { useQueryClient } from "@tanstack/react-query";
 import { useBlockNumber, useReadContract } from "wagmi";
 import { erc20Abi, formatUnits } from "viem";
-import { cUSD, fleetOperatorBook } from "@/utils/constants/addresses";
-import { celo } from "viem/chains";
+import { USD, fleetOperatorBook } from "@/utils/constants/addresses";
+import { mantleSepoliaTestnet } from "viem/chains";
 import { useEffect, useState } from "react";
 import { fleetOperatorBookAbi } from "@/utils/abis/fleetOperatorBook";
 import { OnRamp } from "@/components/ramp/onRamp";
@@ -48,7 +48,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
 
     const { data: allowanceCeloUSD, isLoading: allowanceCeloDollarLoading, queryKey: allowanceCeloDollarQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: cUSD,
+        address: USD,
         functionName: "allowance",
         args: [address!, fleetOperatorBook],
     })
@@ -59,9 +59,9 @@ export function MakeReservation({ address }: MakeReservationProps) {
 
     const { data: tokenBalance, isLoading: tokenBalanceLoading, queryKey: tokenBalanceQueryKey } = useReadContract({
         abi: erc20Abi,
-        address: cUSD,
+        address: USD,
         functionName: "balanceOf",
-        chainId: celo.id,
+        chainId: mantleSepoliaTestnet.id,
         args: [address!],
 
     })
@@ -168,7 +168,7 @@ export function MakeReservation({ address }: MakeReservationProps) {
                                         ?(
                                             <Button 
                                                 className="w-full h-12 rounded-2xl mt-3 text-base font-semibold max-w-xs"
-                                                onClick={() => approve(address!, cUSD)}
+                                                onClick={() => approve(address!, USD)}
                                                 disabled={loadingApproval}
                                             >
                                                 {

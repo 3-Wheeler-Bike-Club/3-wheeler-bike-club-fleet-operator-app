@@ -1,13 +1,13 @@
 import { http } from "wagmi";
 import { createConfig } from "@privy-io/wagmi";
 
-import { celo, optimism } from "wagmi/chains";
+import { mantleSepoliaTestnet, optimism } from "wagmi/chains";
 
 export const wagmiConfig = createConfig({
-  chains: [celo, optimism],
+  chains: [mantleSepoliaTestnet, optimism],
   ssr: true,
   transports: {
-    [celo.id]: http(process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL),
+    [mantleSepoliaTestnet.id]: http(process.env.NEXT_PUBLIC_ALCHEMY_RPC_URL),
     [optimism.id]: http(),
   },
 });

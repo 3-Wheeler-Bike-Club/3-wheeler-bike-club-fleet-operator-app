@@ -3,7 +3,7 @@ import { fleetOperatorBook } from "@/utils/constants/addresses"
 import { useState } from "react"
 import { toast } from "sonner"
 import { encodeFunctionData, erc20Abi, maxUint256 } from "viem"
-import { celo } from "viem/chains"
+import { mantleSepoliaTestnet } from "viem/chains"
 import { useAccount, useSendTransaction, useSwitchChain } from "wagmi";
 
 
@@ -26,8 +26,8 @@ export const useApprove = () => {
         })
         
 
-        if (chainId !== celo.id) {
-          await switchChainAsync({ chainId: celo.id })
+        if (chainId !== mantleSepoliaTestnet.id) {
+          await switchChainAsync({ chainId: mantleSepoliaTestnet.id })
         }
         
         //Send the transaction your dapp was already going to perform (e.g. swap, transfer, contract interaction)
@@ -35,7 +35,7 @@ export const useApprove = () => {
           to: to,
           data: data,
           value: BigInt(0),
-          chainId: celo.id
+          chainId: mantleSepoliaTestnet.id
         })
         
         const transaction = await publicClient.waitForTransactionReceipt({
