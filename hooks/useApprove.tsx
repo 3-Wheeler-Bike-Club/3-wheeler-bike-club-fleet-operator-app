@@ -45,7 +45,7 @@ export const useApprove = () => {
         
         setLoadingApproval(false) 
         toast.info("Approval successful", {
-          description: "You can now purchase the 3-Wheelers",
+          description: "You can now reserve the 3-Wheeler",
         })
       } catch (error) {
         console.log(error)
